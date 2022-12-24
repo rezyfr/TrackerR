@@ -13,6 +13,7 @@ import io.rezyfr.trackerr.R
 class GoogleApiContract : ActivityResultContract<Int, Task<GoogleSignInAccount>?>() {
     override fun createIntent(context: Context, input: Int): Intent {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("756478704192-sfh7k6jic03k07pv24h626oljq5qikq3.apps.googleusercontent.com")
             .requestEmail()
             .build()
 

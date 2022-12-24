@@ -16,23 +16,23 @@
 
 package io.rezyfr.trackerr.core.data.di
 
+import android.content.Context
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import io.rezyfr.trackerr.core.data.HomeScreenRepository
-import io.rezyfr.trackerr.core.data.DefaultHomeScreenRepository
-import io.rezyfr.trackerr.core.data.LoginRepository
-import io.rezyfr.trackerr.core.data.LoginRepositoryImpl
+import io.rezyfr.trackerr.core.data.TransactionRepository
+import io.rezyfr.trackerr.core.data.TransactionRepositoryImpl
+import io.rezyfr.trackerr.core.data.AuthRepository
+import io.rezyfr.trackerr.core.data.AuthRepositoryImpl
+import io.rezyfr.trackerr.core.data.model.TransactionModel
 import io.rezyfr.trackerr.core.database.HomeScreenDao
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -44,27 +44,25 @@ class DataModule {
     @Singleton
     @Provides
     fun provideHomeScreenRepository(
-        homeScreenDao: HomeScreenDao
-    ): HomeScreenRepository {
-        return DefaultHomeScreenRepository(homeScreenDao)
+        @Named("transaction") collectionReference: CollectionReference,
+        @Dispatcher(TrackerRDispatchers.IO) dispatcher: CoroutineDispatcher
+    ): TransactionRepository {
+        return TransactionRepositoryImpl(collectionReference, dispatcher)
     }
 
     @Singleton
     @Provides
     fun provideLoginRepository(
         @Named("users") collectionReference: CollectionReference,
+        @ApplicationContext appContext: Context,
         @Dispatcher(TrackerRDispatchers.IO) dispatcher: CoroutineDispatcher
-    ) : LoginRepository {
-        return LoginRepositoryImpl(collectionReference, dispatcher)
+    ) : AuthRepository {
+        return AuthRepositoryImpl(collectionReference, appContext, dispatcher)
     }
 }
 
-class FakeHomeScreenRepository @Inject constructor() : HomeScreenRepository {
-    override val homeScreens: Flow<List<String>> = flowOf(fakeHomeScreens)
-
-    override suspend fun add(name: String) {
-        throw NotImplementedError()
+class FakeTransactionRepository @Inject constructor() : TransactionRepository {
+    override fun getRecentTransaction(): Flow<List<TransactionModel>> {
+        return flow { listOf<TransactionModel>() }
     }
 }
-
-val fakeHomeScreens = listOf("One", "Two", "Three")

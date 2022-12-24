@@ -23,19 +23,19 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import io.rezyfr.trackerr.core.data.DefaultHomeScreenRepository
+import io.rezyfr.trackerr.core.data.TransactionRepositoryImpl
 import io.rezyfr.trackerr.core.database.HomeScreen
 import io.rezyfr.trackerr.core.database.HomeScreenDao
 
 /**
- * Unit tests for [DefaultHomeScreenRepository].
+ * Unit tests for [TransactionRepositoryImpl].
  */
 @OptIn(ExperimentalCoroutinesApi::class) // TODO: Remove when stable
-class DefaultHomeScreenRepositoryTest {
+class TransactionRepositoryImplTest {
 
     @Test
     fun homeScreens_newItemSaved_itemIsReturned() = runTest {
-        val repository = DefaultHomeScreenRepository(FakeHomeScreenDao())
+        val repository = TransactionRepositoryImpl(FakeHomeScreenDao())
 
         repository.add("Repository")
 

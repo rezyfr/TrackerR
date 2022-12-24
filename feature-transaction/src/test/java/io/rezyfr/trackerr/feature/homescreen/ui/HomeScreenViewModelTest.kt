@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import io.rezyfr.trackerr.core.data.HomeScreenRepository
+import io.rezyfr.trackerr.core.data.TransactionRepository
 import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenUiState
 import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenViewModel
 
@@ -37,18 +37,18 @@ import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenViewModel
 class HomeScreenViewModelTest {
     @Test
     fun uiState_initiallyLoading() = runTest {
-        val viewModel = HomeScreenViewModel(FakeHomeScreenRepository())
+        val viewModel = HomeScreenViewModel(FakeTransactionRepository())
         assertEquals(viewModel.uiState.first(), HomeScreenUiState.Loading)
     }
 
     @Test
     fun uiState_onItemSaved_isDisplayed() = runTest {
-        val viewModel = HomeScreenViewModel(FakeHomeScreenRepository())
+        val viewModel = HomeScreenViewModel(FakeTransactionRepository())
         assertEquals(viewModel.uiState.first(), HomeScreenUiState.Loading)
     }
 }
 
-private class FakeHomeScreenRepository : HomeScreenRepository {
+private class FakeTransactionRepository : TransactionRepository {
 
     private val data = mutableListOf<String>()
 

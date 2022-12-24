@@ -33,14 +33,21 @@ fun MainNavigation() {
     NavHost(navController = navController, startDestination = Screens.LoginScreen.route) {
         composable(Screens.LoginScreen.route) {
             LoginScreen(modifier = Modifier.padding(16.dp), onLogin = {
-                navController.navigate(Screens.TransactionScreen.route)
+                navController.navigate(Screens.TransactionScreen.route) {
+                    launchSingleTop = true
+                }
             })
         }
         composable(Screens.TransactionScreen.route) {
             TransactionScreen(
                 modifier = Modifier.padding(
                     16.dp
-                )
+                ),
+                onLogout = {
+                    navController.navigate(Screens.LoginScreen.route){
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }

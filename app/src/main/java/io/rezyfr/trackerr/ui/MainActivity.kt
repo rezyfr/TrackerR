@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import io.rezyfr.trackerr.core.ui.MyApplicationTheme
+import io.rezyfr.trackerr.core.ui.component.MainBackground
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,10 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+                MainBackground{
                     MainNavigation()
                 }
             }

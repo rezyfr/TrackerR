@@ -19,31 +19,34 @@ package io.rezyfr.trackerr.feature.homescreen.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import io.rezyfr.trackerr.core.data.AuthRepository
 import kotlinx.coroutines.launch
-import io.rezyfr.trackerr.core.data.HomeScreenRepository
-import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenUiState.Error
+import io.rezyfr.trackerr.core.data.TransactionRepository
+import io.rezyfr.trackerr.core.data.model.TransactionModel
 import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenUiState.Loading
 import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenUiState.Success
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val homeScreenRepository: HomeScreenRepository
+    private val transactionRepository: TransactionRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    val uiState: StateFlow<HomeScreenUiState> = homeScreenRepository
-        .homeScreens.map { Success(data = it) }
+    val uiState: StateFlow<HomeScreenUiState> =
+        transactionRepository
+        .getRecentTransaction().map { Success(data = it) }
         .catch { Error(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
-    fun addHomeScreen(name: String) {
+    fun logout() {
         viewModelScope.launch {
-            homeScreenRepository.add(name)
+            authRepository.logout().collectLatest {
+                if(it.isSuccess){
+//                    uiState.value = Success(listOf())
+                }
+            }
         }
     }
 }
@@ -51,5 +54,5 @@ class HomeScreenViewModel @Inject constructor(
 sealed interface HomeScreenUiState {
     object Loading : HomeScreenUiState
     data class Error(val throwable: Throwable) : HomeScreenUiState
-    data class Success(val data: List<String>) : HomeScreenUiState
+    data class Success(val data: List<TransactionModel>) : HomeScreenUiState
 }

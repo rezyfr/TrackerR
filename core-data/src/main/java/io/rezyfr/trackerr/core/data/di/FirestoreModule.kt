@@ -27,4 +27,11 @@ class FirestoreModule {
     fun provideUserCollection(db: FirebaseFirestore): CollectionReference {
         return db.collection("users")
     }
+
+    @Provides
+    @Singleton
+    @Named("transaction")
+    fun provideTransactionCollection(db: FirebaseFirestore): CollectionReference {
+        return db.collection("transaction")
+    }
 }

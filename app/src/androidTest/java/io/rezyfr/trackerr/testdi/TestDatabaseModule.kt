@@ -20,9 +20,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.testing.TestInstallIn
-import io.rezyfr.trackerr.core.data.HomeScreenRepository
+import io.rezyfr.trackerr.core.data.TransactionRepository
 import io.rezyfr.trackerr.core.data.di.DataModule
-import io.rezyfr.trackerr.core.data.di.FakeHomeScreenRepository
+import io.rezyfr.trackerr.core.data.di.FakeTransactionRepository
 
 @Module
 @TestInstallIn(
@@ -33,6 +33,6 @@ interface FakeDataModule {
 
     @Binds
     abstract fun bindRepository(
-        fakeRepository: FakeHomeScreenRepository
-    ): HomeScreenRepository
+        fakeRepository: FakeTransactionRepository
+    ): TransactionRepository
 }

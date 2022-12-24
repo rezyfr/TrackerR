@@ -2,6 +2,7 @@ package io.rezyfr.trackerr.ui.auth
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,19 +27,22 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onLogin: () -> Unit,
 ) {
-    viewModel.uiState.collectAsState().value.let { state ->
-        when (state) {
-            is LoginUiState.Loading -> {
-            }
-            is LoginUiState.Error -> {
-            }
-            is LoginUiState.Success -> {
-                onLogin()
+    Column {
+        viewModel.uiState.collectAsState().value.let { state ->
+            when (state) {
+                is LoginUiState.Loading -> {
+                }
+                is LoginUiState.Error -> {
+                    Text("Error: ${state.throwable.message}")
+                }
+                is LoginUiState.Success -> {
+                    onLogin()
+                }
             }
         }
-    }
-    SignInButton() {
-        viewModel.storeUserData(it)
+        SignInButton() {
+            viewModel.storeUserData(it)
+        }
     }
 }
 @Composable

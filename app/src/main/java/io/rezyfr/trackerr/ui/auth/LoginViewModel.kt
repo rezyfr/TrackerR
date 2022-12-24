@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.rezyfr.trackerr.core.data.LoginRepository
+import io.rezyfr.trackerr.core.data.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -13,18 +13,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
     private var _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Loading)
     val uiState: StateFlow<LoginUiState> = _uiState
+
+    init {
+        viewModelScope.launch {
+            authRepository.isLoggedIn.collectLatest {
+                if (it) _uiState.value = LoginUiState.Success
+            }
+        }
+    }
+
     fun storeUserData(gsa: GoogleSignInAccount) {
         viewModelScope.launch {
-            loginRepository.storeUserData(gsa).collectLatest {
+            authRepository.storeUserData(gsa).collectLatest {
                 if (it.isSuccess) {
-                    _uiState.value = LoginUiState.Success(true)
+                    _uiState.value = LoginUiState.Success
                 } else {
-                    _uiState.value = LoginUiState.Error(it.exceptionOrNull()!!)
-                }
+                    _uiState.value =
+                        LoginUiState.Error(it.exceptionOrNull() ?: Exception("Unknown error"))                }
             }
         }
     }
@@ -33,6 +42,6 @@ class LoginViewModel @Inject constructor(
 sealed interface LoginUiState {
     object Loading : LoginUiState
     data class Error(val throwable: Throwable) : LoginUiState
-    data class Success(val isSuccess: Boolean) : LoginUiState
+    object Success : LoginUiState
 }
 
