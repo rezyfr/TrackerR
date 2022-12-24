@@ -4,8 +4,8 @@ import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Dispatcher(val trackerRDispatchers: TrackerRDispatchers)
+annotation class Dispatcher(val trackerRDispatchers: TrDispatchers)
 
-enum class TrackerRDispatchers {
+enum class TrDispatchers {
     IO
 }

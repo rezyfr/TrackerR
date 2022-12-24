@@ -8,7 +8,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.ktx.Firebase
 import io.rezyfr.trackerr.core.data.di.Dispatcher
-import io.rezyfr.trackerr.core.data.di.TrackerRDispatchers
+import io.rezyfr.trackerr.core.data.di.TrDispatchers
 import io.rezyfr.trackerr.core.data.model.UserModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +30,7 @@ interface AuthRepository {
 class AuthRepositoryImpl @Inject constructor(
     private val collectionReference: CollectionReference,
     private val context: Context,
-    @Dispatcher(TrackerRDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
+    @Dispatcher(TrDispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) : AuthRepository {
     override val isLoggedIn: Flow<Boolean>
         get() = callbackFlow {

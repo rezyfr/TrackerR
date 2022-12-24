@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DispatchersModule {
     @Provides
-    @Dispatcher(TrackerRDispatchers.IO)
+    @Dispatcher(TrDispatchers.IO)
     @Singleton
     fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 }

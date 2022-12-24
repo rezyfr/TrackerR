@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,10 +29,13 @@ import io.rezyfr.trackerr.feature.homescreen.ui.TransactionScreen
 import io.rezyfr.trackerr.ui.auth.LoginScreen
 
 @Composable
-fun MainNavigation() {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = Screens.LoginScreen.route) {
+fun TrNavigation(
+    navController: NavHostController
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Screens.LoginScreen.route
+    ) {
         composable(Screens.LoginScreen.route) {
             LoginScreen(modifier = Modifier.padding(16.dp), onLogin = {
                 navController.navigate(Screens.TransactionScreen.route) {
@@ -42,12 +47,7 @@ fun MainNavigation() {
             TransactionScreen(
                 modifier = Modifier.padding(
                     16.dp
-                ),
-                onLogout = {
-                    navController.navigate(Screens.LoginScreen.route){
-                        launchSingleTop = true
-                    }
-                }
+                )
             )
         }
     }

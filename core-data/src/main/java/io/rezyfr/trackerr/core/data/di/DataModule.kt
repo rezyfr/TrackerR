@@ -45,7 +45,7 @@ class DataModule {
     @Provides
     fun provideHomeScreenRepository(
         @Named("transaction") collectionReference: CollectionReference,
-        @Dispatcher(TrackerRDispatchers.IO) dispatcher: CoroutineDispatcher
+        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
     ): TransactionRepository {
         return TransactionRepositoryImpl(collectionReference, dispatcher)
     }
@@ -55,7 +55,7 @@ class DataModule {
     fun provideLoginRepository(
         @Named("users") collectionReference: CollectionReference,
         @ApplicationContext appContext: Context,
-        @Dispatcher(TrackerRDispatchers.IO) dispatcher: CoroutineDispatcher
+        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
     ) : AuthRepository {
         return AuthRepositoryImpl(collectionReference, appContext, dispatcher)
     }

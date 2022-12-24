@@ -18,7 +18,7 @@ package io.rezyfr.trackerr.core.data
 
 import com.google.firebase.firestore.CollectionReference
 import io.rezyfr.trackerr.core.data.di.Dispatcher
-import io.rezyfr.trackerr.core.data.di.TrackerRDispatchers
+import io.rezyfr.trackerr.core.data.di.TrDispatchers
 import io.rezyfr.trackerr.core.data.model.TransactionModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
@@ -34,7 +34,7 @@ interface TransactionRepository {
 
 class TransactionRepositoryImpl @Inject constructor(
     private val db: CollectionReference,
-    @Dispatcher(TrackerRDispatchers.IO) private val dispatcher: CoroutineDispatcher
+    @Dispatcher(TrDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : TransactionRepository {
     override fun getRecentTransaction(): Flow<List<TransactionModel>> = callbackFlow {
         val callback =

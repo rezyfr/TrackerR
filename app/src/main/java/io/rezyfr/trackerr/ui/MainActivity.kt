@@ -19,13 +19,9 @@ package io.rezyfr.trackerr.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import io.rezyfr.trackerr.core.ui.MyApplicationTheme
-import io.rezyfr.trackerr.core.ui.component.MainBackground
+import io.rezyfr.trackerr.core.ui.component.TrBackground
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,9 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                MainBackground{
-                    MainNavigation()
-                }
+                TrApp()
             }
         }
     }

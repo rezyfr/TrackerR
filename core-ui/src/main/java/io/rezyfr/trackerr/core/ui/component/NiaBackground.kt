@@ -19,7 +19,7 @@ import io.rezyfr.trackerr.core.ui.LocalBackgroundTheme
  * @param content The background content.
  */
 @Composable
-fun MainBackground(
+fun TrBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {

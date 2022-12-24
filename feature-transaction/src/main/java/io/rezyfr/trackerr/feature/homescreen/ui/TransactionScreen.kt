@@ -31,6 +31,7 @@ import io.rezyfr.trackerr.feature.homescreen.ui.HomeScreenUiState.Success
 
 @Composable
 fun TransactionScreen(
+    modifier: Modifier = Modifier,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     Column() {
