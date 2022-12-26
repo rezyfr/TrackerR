@@ -1,11 +1,11 @@
 package io.rezyfr.trackerr.core.domain.model
 
-import io.rezyfr.trackerr.core.data.mapper.DateUtils
-import io.rezyfr.trackerr.core.data.mapper.NumberUtils
+import io.rezyfr.trackerr.core.domain.mapper.DateUtils
+import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 
 data class TransactionModel(
-    val amount: String,
+    val amount: Long,
     val date: String,
     val description: String,
     val type: String,
@@ -13,10 +13,12 @@ data class TransactionModel(
     val category: String,
 ) {
     val isIncome = type == "income"
+    val amountLabel: String =
+        (if (type == "expense") "-" else "") + NumberUtils.getRupiahCurrency(amount)
 
     companion object {
         fun empty() = TransactionModel(
-            amount = "",
+            amount = 0L,
             date = "",
             description = "",
             type = "",
@@ -27,13 +29,7 @@ data class TransactionModel(
 }
 
 fun TransactionFirestore.asUiModel() = TransactionModel(
-    amount = "${
-        (if (type == "expense") "-" else "") + NumberUtils.getRupiahCurrency(
-            NumberUtils.getCleanString(
-                amount.orEmpty()
-            )
-        )
-    } ",
+    amount = amount ?: 0L,
     date = DateUtils.getDetailDateString(date?.toDate()).orEmpty(),
     description = description.orEmpty(),
     type = type.orEmpty(),
@@ -43,7 +39,7 @@ fun TransactionFirestore.asUiModel() = TransactionModel(
 
 val previewTransactionModel = listOf(
     TransactionModel(
-        amount = "Rp 1.000.000",
+        amount = 1000000L,
         date = "24 Oktober 2022",
         description = "Traktir ulang tahun",
         type = "expense",
@@ -51,7 +47,7 @@ val previewTransactionModel = listOf(
         category = "Keluarga"
     ),
     TransactionModel(
-        amount = "Rp 56.000",
+        amount = 56000L,
         date = "28 Oktober 2022",
         description = "Starbucks Salted Caramel Latte",
         type = "expense",
@@ -59,7 +55,7 @@ val previewTransactionModel = listOf(
         category = "Jajanan"
     ),
     TransactionModel(
-        amount = "Rp 729.000",
+        amount = 729000L,
         date = "1 November 2022",
         description = "PLN Oktober 2022",
         type = "expense",
@@ -67,7 +63,7 @@ val previewTransactionModel = listOf(
         category = "Tagihan - Listrik"
     ),
     TransactionModel(
-        amount = "Rp 14.328.000",
+        amount = 14328000L,
         date = "25 November 2022",
         description = "Gaji November 2022",
         type = "income",

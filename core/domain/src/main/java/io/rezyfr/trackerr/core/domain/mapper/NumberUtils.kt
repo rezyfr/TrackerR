@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.core.data.mapper
+package io.rezyfr.trackerr.core.domain.mapper
 
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -32,8 +32,8 @@ object NumberUtils {
 
     fun getRupiahCurrency(amount: Long): String {
         val moneyString = indonesiaFormat.format(kotlin.math.abs(amount))
-        return if (amount < 0) "-Rp$moneyString"
-        else "Rp$moneyString"
+        return if (amount < 0) "-Rp $moneyString"
+        else "Rp $moneyString"
     }
 
     fun getShortCurrency(amount: Long): String {

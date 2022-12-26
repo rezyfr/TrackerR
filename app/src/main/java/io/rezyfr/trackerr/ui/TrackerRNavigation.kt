@@ -16,6 +16,7 @@
 
 package io.rezyfr.trackerr.ui
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,7 +26,7 @@ import io.rezyfr.trackerr.ui.auth.LoginScreen
 
 @Composable
 fun TrNavigation(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     NavHost(
         navController = navController,

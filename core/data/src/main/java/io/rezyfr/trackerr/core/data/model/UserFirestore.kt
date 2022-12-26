@@ -4,11 +4,11 @@ import com.google.firebase.firestore.PropertyName
 
 data class UserFirestore(
     @get:PropertyName("id")
-    val id: String,
+    val id: String = "",
     @get:PropertyName("email")
-    val email: String,
+    val email: String = "",
     @get:PropertyName("name")
-    val name: String,
-    @get:PropertyName("photo_url")
-    val photoUrl: String,
+    val name: String = "",
+    @get:PropertyName("photoUrl")
+    val photoUrl: String = "",
 )

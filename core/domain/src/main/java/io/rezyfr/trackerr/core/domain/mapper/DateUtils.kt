@@ -1,7 +1,7 @@
-package io.rezyfr.trackerr.core.data.mapper
+package io.rezyfr.trackerr.core.domain.mapper
 
 import android.os.Build
-import io.rezyfr.trackerr.core.data.mapper.NumberUtils.localeIndonesia
+import io.rezyfr.trackerr.core.domain.mapper.NumberUtils.localeIndonesia
 import java.text.*
 import java.util.*
 import java.util.concurrent.TimeUnit

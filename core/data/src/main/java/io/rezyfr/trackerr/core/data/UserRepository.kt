@@ -9,7 +9,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.ktx.Firebase
 import io.rezyfr.trackerr.core.data.di.Dispatcher
 import io.rezyfr.trackerr.core.data.di.TrDispatchers
@@ -27,7 +26,8 @@ import javax.inject.Inject
 
 interface UserRepository {
     val isLoggedIn: Flow<Boolean>
-    val currentUserId: String
+    val currentFirebaseUser: FirebaseUser
+    fun getCurrentUserProfile(uid: String): Flow<UserFirestore>
     fun storeUserData(google: GoogleSignInAccount, auth: AuthResult): Flow<Result<Boolean>>
     suspend fun signInFirebase(gsa: GoogleSignInAccount): Task<AuthResult>
     fun logout(): Flow<Result<Boolean>>
@@ -45,11 +45,24 @@ class UserRepositoryImpl @Inject constructor(
             }
             awaitClose { listener?.asDeferred()?.cancel() }
         }
-    override val currentUserId: String
-        get() = Firebase.auth.currentUser?.uid ?: throw IllegalStateException("User not logged in")
+    override val currentFirebaseUser: FirebaseUser =
+        Firebase.auth.currentUser ?: throw IllegalStateException("User not logged in")
+
+    override fun getCurrentUserProfile(uid: String): Flow<UserFirestore> = callbackFlow {
+        val listener = collectionReference.document(uid).get().addOnCompleteListener {
+            trySend(
+                it.result.toObject(UserFirestore::class.java)
+                    ?: throw IllegalStateException("User not found")
+            )
+        }
+        awaitClose { listener.asDeferred().cancel() }
+    }.flowOn(ioDispatcher)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun storeUserData(google: GoogleSignInAccount, auth: AuthResult): Flow<Result<Boolean>> = flow {
+    override fun storeUserData(
+        google: GoogleSignInAccount,
+        auth: AuthResult
+    ): Flow<Result<Boolean>> = flow {
         emit(suspendCancellableCoroutine<Result<Boolean>> { continuation ->
             val user = UserFirestore(
                 id = auth.user?.uid ?: google.idToken.orEmpty(),
@@ -64,7 +77,11 @@ class UserRepositoryImpl @Inject constructor(
                     }
                 }
                 task.addOnFailureListener { _ ->
-                    continuation.resume(Result.failure(task.exception ?: Exception("Unknown error"))) {
+                    continuation.resume(
+                        Result.failure(
+                            task.exception ?: Exception("Unknown error")
+                        )
+                    ) {
                         continuation.cancel()
                     }
                 }
@@ -73,15 +90,16 @@ class UserRepositoryImpl @Inject constructor(
     }.flowOn(ioDispatcher)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun signInFirebase(gsa: GoogleSignInAccount): Task<AuthResult> = suspendCancellableCoroutine { cont ->
-        val token = gsa.idToken.orEmpty()
-        val firebaseCred = GoogleAuthProvider.getCredential(token, null)
-        Firebase.auth.signInWithCredential(firebaseCred).addOnCompleteListener { auth ->
-            cont.resume(auth) {
-                cont.cancel()
+    override suspend fun signInFirebase(gsa: GoogleSignInAccount): Task<AuthResult> =
+        suspendCancellableCoroutine { cont ->
+            val token = gsa.idToken.orEmpty()
+            val firebaseCred = GoogleAuthProvider.getCredential(token, null)
+            Firebase.auth.signInWithCredential(firebaseCred).addOnCompleteListener { auth ->
+                cont.resume(auth) {
+                    cont.cancel()
+                }
             }
         }
-    }
 
     override fun logout(): Flow<Result<Boolean>> {
         return callbackFlow {

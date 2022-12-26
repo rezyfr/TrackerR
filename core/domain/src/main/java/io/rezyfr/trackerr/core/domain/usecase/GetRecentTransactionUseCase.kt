@@ -13,7 +13,7 @@ class GetRecentTransactionUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
     operator fun invoke(): Flow<List<TransactionModel>> {
-        return repository.getRecentTransaction(userRepository.currentUserId).map {
+        return repository.getRecentTransaction(userRepository.currentFirebaseUser.uid).map {
             it.map { tf ->
                 tf.asUiModel()
             }

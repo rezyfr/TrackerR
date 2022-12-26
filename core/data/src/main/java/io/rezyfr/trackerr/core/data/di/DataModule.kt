@@ -23,11 +23,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.rezyfr.trackerr.core.data.*
 import kotlinx.coroutines.flow.Flow
-import io.rezyfr.trackerr.core.data.TransactionRepository
-import io.rezyfr.trackerr.core.data.TransactionRepositoryImpl
-import io.rezyfr.trackerr.core.data.UserRepository
-import io.rezyfr.trackerr.core.data.UserRepositoryImpl
 import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.flow
@@ -56,6 +53,15 @@ class DataModule {
         @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
     ) : UserRepository {
         return UserRepositoryImpl(collectionReference, appContext, dispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideWalletRepository(
+        @Named("wallet") collectionReference: CollectionReference,
+        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
+    ) : WalletRepository {
+        return WalletRepositoryImpl(collectionReference, dispatcher)
     }
 }
 

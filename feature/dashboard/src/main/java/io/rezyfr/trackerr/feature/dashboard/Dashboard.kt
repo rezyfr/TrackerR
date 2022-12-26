@@ -16,78 +16,121 @@
 
 package io.rezyfr.trackerr.feature.dashboard
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.component.TextCell
 import io.rezyfr.trackerr.core.ui.component.TransactionItem
-import io.rezyfr.trackerr.feature.dashboard.HomeScreenUiState.Success
 
 @Composable
 fun Dashboard(
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
 ) {
-    val dashboardState by viewModel.uiState.collectAsState()
-
-    DashboardScreen(dashboardState = dashboardState)
-    viewModel.uiState.collectAsState().value.let { state ->
-        when (state) {
-            is HomeScreenUiState.Loading -> {
-            }
-            is Error -> {
-                Text("Error:")
-            }
-            is Success -> {
-            }
-            else -> {}
-        }
-    }
+    val recentTransactionState by viewModel.recentTransactionState.collectAsState()
+    val balanceState by viewModel.totalBalanceState.collectAsState()
+    DashboardScreen(
+        recentTransactionState = recentTransactionState,
+        totalBalanceState = balanceState,
+        modifier = modifier,
+    )
 }
 
 @Composable
 fun DashboardScreen(
-    dashboardState: HomeScreenUiState,
+    recentTransactionState: RecentTransactionState,
+    totalBalanceState: TotalBalanceState,
+    modifier: Modifier = Modifier,
 ) {
-    LazyColumn {
-        item {
+    LazyColumn(modifier = modifier) {
+        accountTotalBalance(totalBalanceState)
+        item() {
             TextCell(label = "Recent transaction", actionText = "See all")
         }
-        when (dashboardState) {
-            is Success -> {
-                items(dashboardState.data) { transaction ->
-                    TransactionItem(transaction = transaction)
-                    Divider()
+        recentTransaction(recentTransactionState = recentTransactionState)
+    }
+}
+
+fun LazyListScope.accountTotalBalance(totalBalanceState: TotalBalanceState) {
+    when (totalBalanceState) {
+        is TotalBalanceState.Success -> {
+            item {
+                Row(Modifier.fillMaxWidth().padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    AsyncImage(
+                        model = totalBalanceState.profileUrl,
+                        contentDescription = "Profile image",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(48.dp)
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Total balance",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                        Text(
+                            text = totalBalanceState.balance,
+                            style = MaterialTheme.typography.headlineSmall,
+                        )
+                    }
                 }
             }
-            else -> Unit
         }
+        is TotalBalanceState.Error -> {
+            item {
+                Text(text = "Error" + totalBalanceState.throwable.message)
+            }
+        }
+        else -> Unit
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-private fun DefaultPreview() {
-    TrTheme {
-        DashboardScreen(dashboardState = HomeScreenUiState.Success(previewTransactionModel))
+fun LazyListScope.recentTransaction(recentTransactionState: RecentTransactionState) {
+    when (recentTransactionState) {
+        is RecentTransactionState.Success -> {
+            items(recentTransactionState.data) { transaction ->
+                TransactionItem(transaction = transaction)
+                Divider()
+            }
+        }
+        else -> Unit
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun PortraitPreview() {
     TrTheme {
-        DashboardScreen(dashboardState = HomeScreenUiState.Success(previewTransactionModel))
+        DashboardScreen(
+            recentTransactionState = RecentTransactionState.Success(
+                previewTransactionModel
+            ),
+            totalBalanceState = TotalBalanceState.Success(
+                "Rp 1.000.000",
+                "https://lh3.googleusercontent.com/a/AEdFTp45oBYXyei183tTlYUjAeQbdt1nBEIZRS0-Om4a=s96-c"
+            ),
+        )
     }
 }

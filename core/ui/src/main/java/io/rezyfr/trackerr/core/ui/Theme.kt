@@ -62,29 +62,23 @@ private val LightDefaultColorScheme = lightColorScheme(
  * Dark default theme color scheme
  */
 private val DarkDefaultColorScheme = darkColorScheme(
-    primary = Purple80,
-    onPrimary = Purple20,
-    primaryContainer = Purple30,
-    onPrimaryContainer = Purple90,
+    primary = Blue80,
+    onPrimary = Blue10,
+    primaryContainer = Blue30,
+    onPrimaryContainer = Blue90,
     secondary = Orange80,
     onSecondary = Orange20,
     secondaryContainer = Orange30,
     onSecondaryContainer = Orange90,
-    tertiary = Blue80,
-    onTertiary = Blue20,
-    tertiaryContainer = Blue30,
-    onTertiaryContainer = Blue90,
     error = Red80,
     onError = Red20,
     errorContainer = Red30,
     onErrorContainer = Red90,
-    background = DarkPurpleGray10,
-    onBackground = DarkPurpleGray90,
-    surface = DarkPurpleGray10,
-    onSurface = DarkPurpleGray90,
-    surfaceVariant = PurpleGray30,
-    onSurfaceVariant = PurpleGray80,
-    outline = PurpleGray60
+    background = DarkBlue10,
+    onBackground = DarkBlue90,
+    surface = DarkBlue10,
+    onSurface = DarkBlue90,
+    outline = DarkBlue80
 )
 
 /**
@@ -152,27 +146,32 @@ fun TrTheme(
     androidTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val colorScheme = DarkDefaultColorScheme
+    val backgroundScheme = BackgroundTheme(
+        color = colorScheme.surface,
+        tonalElevation = 2.dp
+    )
+//    val colorScheme = when {
 //        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
 //            val context = LocalContext.current
 //            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
 //        }
 //        androidTheme && darkTheme -> DarkAndroidColorScheme
 //        androidTheme -> LightAndroidColorScheme
-        darkTheme -> DarkDefaultColorScheme
-        else -> LightDefaultColorScheme
-    }
-    val backgroundTheme = when {
+//        darkTheme -> DarkDefaultColorScheme
+//        else -> LightDefaultColorScheme
+//    }
+//    val backgroundTheme = when {
 //        androidTheme && darkTheme -> BackgroundTheme(
 //            color = Color.Black
 //        )
 //        androidTheme -> BackgroundTheme(
 //            color = DarkGreenGray95
 //        )
-        darkTheme -> BackgroundTheme(
-            color = colorScheme.surface,
-            tonalElevation = 2.dp
-        )
+//        darkTheme -> BackgroundTheme(
+//            color = colorScheme.surface,
+//            tonalElevation = 2.dp
+//        )
 //        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> BackgroundTheme(
 //            color = colorScheme.surface,
 //            tonalElevation = 2.dp,
@@ -181,17 +180,17 @@ fun TrTheme(
 //            tertiaryGradientColor = colorScheme.tertiary.lighten(0.95f),
 //            neutralGradientColor = colorScheme.surface.lighten(0.95f)
 //        )
-        else -> BackgroundTheme(
-            color = colorScheme.surface,
-            tonalElevation = 2.dp,
-            primaryGradientColor = Purple95,
-            secondaryGradientColor = Orange95,
-            tertiaryGradientColor = Blue95,
-            neutralGradientColor = DarkPurpleGray95
-        )
-    }
+//        else -> BackgroundTheme(
+//            color = colorScheme.surface,
+//            tonalElevation = 2.dp,
+//            primaryGradientColor = Purple95,
+//            secondaryGradientColor = Orange95,
+//            tertiaryGradientColor = Blue95,
+//            neutralGradientColor = DarkPurpleGray95
+//        )
+//    }
 
-    CompositionLocalProvider(LocalBackgroundTheme provides backgroundTheme) {
+    CompositionLocalProvider(LocalBackgroundTheme provides backgroundScheme) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = MainTypography,

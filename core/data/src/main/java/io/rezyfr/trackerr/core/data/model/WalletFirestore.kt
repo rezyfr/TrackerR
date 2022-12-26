@@ -4,7 +4,7 @@ import com.google.firebase.firestore.PropertyName
 
 data class WalletFirestore (
     @get:PropertyName("balance")
-    val balance: String = "",
+    val balance: Long = 0L,
     @get:PropertyName("name")
     val name: String = "",
     @get:PropertyName("userId")

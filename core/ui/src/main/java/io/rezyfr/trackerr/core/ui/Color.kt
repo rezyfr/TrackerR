@@ -18,6 +18,7 @@ package io.rezyfr.trackerr.core.ui
 
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.luminance
 import kotlin.math.roundToInt
 
 
@@ -28,6 +29,13 @@ val Blue40 = Color(0xFF006781)
 val Blue80 = Color(0xFF5DD4FB)
 val Blue90 = Color(0xFFB5EAFF)
 val Blue95 = Color(0xFFDCF5FF)
+val DarkBlue10 = Color(0xFF000a12)
+val DarkBlue20 = Color(0xFF102027)
+val DarkBlue30 = Color(0xFF1c313a)
+val DarkBlue40 = Color(0xFF29434e)
+val DarkBlue80 = Color(0xFFb0bec5)
+val DarkBlue90 = Color(0xFFe2f1f8)
+val DarkBlue95 = Color(0xFFffffff)
 val DarkGreen10 = Color(0xFF0D1F12)
 val DarkGreen20 = Color(0xFF223526)
 val DarkGreen30 = Color(0xFF394B3C)
@@ -84,6 +92,24 @@ val Teal30 = Color(0xFF214D56)
 val Teal40 = Color(0xFF3A656F)
 val Teal80 = Color(0xFFA2CED9)
 val Teal90 = Color(0xFFBEEAF6)
+
+fun Long.transactionIndicatorColor(isIncome: Boolean) = when {
+    isIncome -> {
+        when {
+            this > 100000L -> Blue80
+            this > 10000L -> Blue40
+            else -> Blue30
+        }
+    }
+    else -> {
+        when {
+            this > 1000000L -> Orange30
+            this > 100000L -> Orange40
+            this > 10000L -> Orange80
+            else -> Orange90
+        }
+    }
+}
 
 
 /**

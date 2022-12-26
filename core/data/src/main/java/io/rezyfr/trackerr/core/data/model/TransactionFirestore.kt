@@ -5,7 +5,7 @@ import com.google.firebase.firestore.PropertyName
 
 data class TransactionFirestore(
     @get:PropertyName("amount")
-    val amount: String? = null,
+    val amount: Long? = null,
     @get:PropertyName("date")
     val date: Timestamp? = null,
     @get:PropertyName("description")
