@@ -16,16 +16,11 @@
 
 package io.rezyfr.trackerr.ui
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import io.rezyfr.trackerr.feature.homescreen.ui.TransactionScreen
+import io.rezyfr.trackerr.feature.dashboard.Dashboard
 import io.rezyfr.trackerr.ui.auth.LoginScreen
 
 @Composable
@@ -37,18 +32,17 @@ fun TrNavigation(
         startDestination = Screens.LoginScreen.route
     ) {
         composable(Screens.LoginScreen.route) {
-            LoginScreen(modifier = Modifier.padding(16.dp), onLogin = {
-                navController.navigate(Screens.TransactionScreen.route) {
+            LoginScreen(onLogin = {
+                navController.navigate(Screens.DashboardScreen.route) {
                     launchSingleTop = true
                 }
             })
         }
-        composable(Screens.TransactionScreen.route) {
-            TransactionScreen(
-                modifier = Modifier.padding(
-                    16.dp
-                )
-            )
+        composable(Screens.DashboardScreen.route) {
+            Dashboard()
+        }
+        composable(Screens.ProfileScreen.route) {
+            Dashboard()
         }
     }
 }

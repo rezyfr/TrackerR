@@ -32,7 +32,7 @@ class TrAppState(
 
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() = when (currentDestination?.route) {
-            Screens.TransactionScreen.route -> TopLevelDestination.TRANSACTIONS
+            Screens.DashboardScreen.route -> TopLevelDestination.DASHBOARD
             Screens.ProfileScreen.route -> TopLevelDestination.PROFILE
             else -> null
         }
@@ -69,8 +69,8 @@ class TrAppState(
         }
 
         when (topLevelDestination) {
-            TopLevelDestination.TRANSACTIONS -> navController.navigate(
-                Screens.TransactionScreen.route,
+            TopLevelDestination.DASHBOARD -> navController.navigate(
+                Screens.DashboardScreen.route,
                 topLevelNavOptions
             )
             TopLevelDestination.PROFILE -> navController.navigate(

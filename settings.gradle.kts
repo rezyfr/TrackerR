@@ -31,8 +31,11 @@ dependencyResolutionManagement {
 rootProject.name = "TrackerR"
 
 include(":app")
-include(":core-data")
-include(":core-database")
-include(":core-testing")
-include(":core-ui")
-include(":feature-transaction")
+include(":core:data")
+include(":core:domain")
+include(":core:database")
+include(":core:testing")
+include(":core:ui")
+include(":feature:transaction")
+include(":feature:dashboard")
+

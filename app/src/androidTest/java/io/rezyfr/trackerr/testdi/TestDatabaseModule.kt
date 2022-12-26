@@ -31,8 +31,8 @@ import io.rezyfr.trackerr.core.data.di.FakeTransactionRepository
 )
 interface FakeDataModule {
 
-    @Binds
-    abstract fun bindRepository(
-        fakeRepository: FakeTransactionRepository
-    ): TransactionRepository
+//    @Binds
+//    abstract fun bindRepository(
+//        fakeRepository: FakeTransactionRepository
+//    ): TransactionRepository
 }

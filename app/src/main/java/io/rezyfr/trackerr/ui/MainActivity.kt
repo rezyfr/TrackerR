@@ -20,8 +20,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import dagger.hilt.android.AndroidEntryPoint
-import io.rezyfr.trackerr.core.ui.MyApplicationTheme
-import io.rezyfr.trackerr.core.ui.component.TrBackground
+import io.rezyfr.trackerr.core.ui.TrTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -29,7 +28,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
+            TrTheme {
                 TrApp()
             }
         }

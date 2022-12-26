@@ -2,6 +2,7 @@ package io.rezyfr.trackerr.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import io.rezyfr.trackerr.core.ui.icon.Icon
 
@@ -16,11 +17,11 @@ enum class TopLevelDestination(
     val iconTextId: String,
     val titleTextId: String
 ) {
-    TRANSACTIONS(
-        selectedIcon = Icon.ImageVectorIcon(Icons.Default.KeyboardArrowRight),
-        unselectedIcon = Icon.ImageVectorIcon(Icons.Default.KeyboardArrowRight),
-        iconTextId = "Transactions",
-        titleTextId = "Transactions"
+    DASHBOARD(
+        selectedIcon = Icon.ImageVectorIcon(Icons.Default.Home),
+        unselectedIcon = Icon.ImageVectorIcon(Icons.Default.Home),
+        iconTextId = "Dashboard",
+        titleTextId = "Dashboard"
     ),
 
     PROFILE(
