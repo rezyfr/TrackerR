@@ -40,7 +40,7 @@ import io.rezyfr.trackerr.core.ui.component.TextCell
 import io.rezyfr.trackerr.core.ui.component.TransactionItem
 
 @Composable
-fun Dashboard(
+fun DashboardRoute(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {

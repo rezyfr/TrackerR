@@ -28,20 +28,32 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 interface WalletRepository {
-    fun getTotalBalance(userId: String): Flow<Long>
+    fun getTotalBalance(uid: String?): Flow<Long>
+    fun getWallets(uid: String?): Flow<List<WalletFirestore>>
 }
 
 class WalletRepositoryImpl @Inject constructor(
     private val db: CollectionReference,
     @Dispatcher(TrDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : WalletRepository {
-    override fun getTotalBalance(userId: String): Flow<Long> = callbackFlow {
-        val listener = db.whereEqualTo("userId", userId).addSnapshotListener { value, error ->
-            val wallets = value?.map {
+    override fun getTotalBalance(uid: String?): Flow<Long> = callbackFlow {
+        val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
+            val balanceResponse = value?.map {
                 it?.toObject(WalletFirestore::class.java)!!
-            } ?: listOf()
-            trySend(wallets.sumOf { it.balance })
+            }?.sumOf { it.balance } ?: throw Throwable(error)
+            trySend(balanceResponse)
         }
         awaitClose { listener.remove() }
     }.flowOn(dispatcher)
+
+    override fun getWallets(uid: String?): Flow<List<WalletFirestore>> {
+        return callbackFlow {
+            val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
+                val walletResponse =
+                    value?.toObjects(WalletFirestore::class.java) ?: throw Throwable(error)
+                trySend(walletResponse)
+            }
+            awaitClose { listener.remove() }
+        }.flowOn(dispatcher)
+    }
 }

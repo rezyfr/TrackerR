@@ -31,6 +31,7 @@ dependencyResolutionManagement {
 rootProject.name = "TrackerR"
 
 include(":app")
+include(":core:common")
 include(":core:data")
 include(":core:domain")
 include(":core:database")

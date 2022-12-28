@@ -28,26 +28,27 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 interface TransactionRepository {
-    fun getRecentTransaction(userId: String): Flow<List<TransactionFirestore>>
+    fun getRecentTransaction(uid: String?): Flow<List<TransactionFirestore>>
 }
 
 class TransactionRepositoryImpl @Inject constructor(
     private val db: CollectionReference,
     @Dispatcher(TrDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : TransactionRepository {
-    override fun getRecentTransaction(userId: String): Flow<List<TransactionFirestore>> = callbackFlow {
-        val callback =
-            db.whereEqualTo("userId", userId)
-                .orderBy("date")
-                .limit(5)
-                .addSnapshotListener { value, error ->
-                    val transactions = value?.map {
-                        it?.toObject(TransactionFirestore::class.java)!!
+    override fun getRecentTransaction(uid: String?): Flow<List<TransactionFirestore>> =
+        callbackFlow {
+            val callback =
+                db.whereEqualTo("userId", uid)
+                    .orderBy("date")
+                    .limit(5)
+                    .addSnapshotListener { value, error ->
+                        val transactions = value?.map {
+                            it?.toObject(TransactionFirestore::class.java)!!
+                        }
+                        if (transactions != null) {
+                            trySend(transactions)
+                        }
                     }
-                    if (transactions!=null) {
-                        trySend(transactions)
-                    }
-                }
-        awaitClose { callback.remove() }
-    }.flowOn(dispatcher)
+            awaitClose { callback.remove() }
+        }.flowOn(dispatcher)
 }

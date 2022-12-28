@@ -1,5 +1,6 @@
 package io.rezyfr.trackerr.core.domain.model
 
+import io.rezyfr.trackerr.common.TransactionType
 import io.rezyfr.trackerr.core.domain.mapper.DateUtils
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.data.model.TransactionFirestore
@@ -8,27 +9,26 @@ data class TransactionModel(
     val amount: Long,
     val date: String,
     val description: String,
-    val type: String,
+    @TransactionType val type: String,
     val wallet: String,
     val category: String,
 ) {
-    val isIncome = type == "income"
-    val amountLabel: String =
-        (if (type == "expense") "-" else "") + NumberUtils.getRupiahCurrency(amount)
+    val isIncome = type == TransactionType.INCOME
+    val amountLabel: String = (if (!isIncome) "-" else "") + NumberUtils.getRupiahCurrency(amount)
 
     companion object {
         fun empty() = TransactionModel(
             amount = 0L,
             date = "",
             description = "",
-            type = "",
+            type = TransactionType.INCOME,
             wallet = "",
             category = "",
         )
     }
 }
 
-fun TransactionFirestore.asUiModel() = TransactionModel(
+fun TransactionFirestore.asDomainModel() = TransactionModel(
     amount = amount ?: 0L,
     date = DateUtils.getDetailDateString(date?.toDate()).orEmpty(),
     description = description.orEmpty(),
@@ -42,7 +42,7 @@ val previewTransactionModel = listOf(
         amount = 1000000L,
         date = "24 Oktober 2022",
         description = "Traktir ulang tahun",
-        type = "expense",
+        type = TransactionType.EXPENSE,
         wallet = "BCA",
         category = "Keluarga"
     ),
@@ -50,7 +50,7 @@ val previewTransactionModel = listOf(
         amount = 56000L,
         date = "28 Oktober 2022",
         description = "Starbucks Salted Caramel Latte",
-        type = "expense",
+        type = TransactionType.EXPENSE,
         wallet = "Mandiri",
         category = "Jajanan"
     ),
@@ -58,7 +58,7 @@ val previewTransactionModel = listOf(
         amount = 729000L,
         date = "1 November 2022",
         description = "PLN Oktober 2022",
-        type = "expense",
+        type = TransactionType.EXPENSE,
         wallet = "Mandiri",
         category = "Tagihan - Listrik"
     ),
@@ -66,7 +66,7 @@ val previewTransactionModel = listOf(
         amount = 14328000L,
         date = "25 November 2022",
         description = "Gaji November 2022",
-        type = "income",
+        type = TransactionType.INCOME,
         wallet = "Mandiri",
         category = "Gaji"
     ),

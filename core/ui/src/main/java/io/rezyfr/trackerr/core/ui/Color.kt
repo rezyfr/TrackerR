@@ -19,6 +19,7 @@ package io.rezyfr.trackerr.core.ui
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.luminance
+import io.rezyfr.trackerr.common.TransactionType
 import kotlin.math.roundToInt
 
 
@@ -96,9 +97,9 @@ val Teal90 = Color(0xFFBEEAF6)
 fun Long.transactionIndicatorColor(isIncome: Boolean) = when {
     isIncome -> {
         when {
-            this > 100000L -> Blue80
-            this > 10000L -> Blue40
-            else -> Blue30
+            this > 100000L -> Green80
+            this > 10000L -> Green40
+            else -> Green30
         }
     }
     else -> {
@@ -109,6 +110,12 @@ fun Long.transactionIndicatorColor(isIncome: Boolean) = when {
             else -> Orange90
         }
     }
+}
+
+fun String.typeIndicatorColor() = when (this) {
+    TransactionType.INCOME -> Blue40
+    TransactionType.EXPENSE -> Orange40
+    else -> Color.Transparent
 }
 
 

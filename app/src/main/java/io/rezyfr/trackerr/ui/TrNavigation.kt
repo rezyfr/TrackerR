@@ -16,13 +16,14 @@
 
 package io.rezyfr.trackerr.ui
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import io.rezyfr.trackerr.feature.dashboard.Dashboard
-import io.rezyfr.trackerr.ui.auth.LoginScreen
+import androidx.navigation.compose.dialog
+import io.rezyfr.trackerr.feature.dashboard.DashboardRoute
+import io.rezyfr.trackerr.feature.homescreen.TransactionDialogRoute
+import io.rezyfr.trackerr.ui.auth.LoginRoute
 
 @Composable
 fun TrNavigation(
@@ -33,17 +34,26 @@ fun TrNavigation(
         startDestination = Screens.LoginScreen.route
     ) {
         composable(Screens.LoginScreen.route) {
-            LoginScreen(onLogin = {
-                navController.navigate(Screens.DashboardScreen.route) {
-                    launchSingleTop = true
+            LoginRoute(
+                onStoreUser = {
+                    navController.navigate(Screens.DashboardScreen.route) {
+                        launchSingleTop = true
+                    }
                 }
-            })
+            )
         }
         composable(Screens.DashboardScreen.route) {
-            Dashboard()
+            DashboardRoute()
         }
         composable(Screens.ProfileScreen.route) {
-            Dashboard()
+            DashboardRoute()
+        }
+        dialog(Dialog.TransactionDialog.route) {
+            TransactionDialogRoute(
+                onDismiss = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

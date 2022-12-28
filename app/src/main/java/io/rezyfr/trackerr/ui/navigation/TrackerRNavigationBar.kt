@@ -8,6 +8,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.rezyfr.trackerr.core.ui.DarkBlue20
 
 /**
  * Now in Android navigation bar item with icon and label content slots. Wraps Material 3
@@ -61,6 +62,7 @@ fun TrNavigationBar(
     NavigationBar(
         modifier = modifier,
         contentColor = TrNavigationDefaults.navigationContentColor(),
+        containerColor = DarkBlue20.copy(alpha = 0.3f),
         tonalElevation = 0.dp,
         content = content
     )
@@ -68,9 +70,11 @@ fun TrNavigationBar(
 
 object TrNavigationDefaults {
     @Composable
-    fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant
+    fun navigationContentColor() = MaterialTheme.colorScheme.onBackground
+
     @Composable
     fun navigationSelectedItemColor() = MaterialTheme.colorScheme.onPrimaryContainer
+
     @Composable
     fun navigationIndicatorColor() = MaterialTheme.colorScheme.primaryContainer
 }

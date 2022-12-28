@@ -6,3 +6,7 @@ sealed class Screens(val route: String) {
 
     object ProfileScreen : Screens("profile_screen")
 }
+
+sealed class Dialog(val route: String){
+    object TransactionDialog : Dialog("transaction_dialog")
+}

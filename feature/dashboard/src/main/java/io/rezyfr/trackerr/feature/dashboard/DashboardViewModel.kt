@@ -19,6 +19,8 @@ package io.rezyfr.trackerr.feature.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.rezyfr.trackerr.common.ResultState
+import io.rezyfr.trackerr.common.asResult
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.core.domain.usecase.GetCurrentUserProfileUseCase
@@ -39,7 +41,9 @@ class DashboardViewModel @Inject constructor(
             .catch {
                 RecentTransactionState.Error(it)
             }
-            .map { RecentTransactionState.Success(data = it) }
+            .map {
+                RecentTransactionState.Success(data = it)
+            }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
@@ -48,19 +52,32 @@ class DashboardViewModel @Inject constructor(
 
     val totalBalanceState: StateFlow<TotalBalanceState> = combine(
         getTotalBalanceUseCase.invoke(),
-        getCurrentUserProfileUseCase.invoke()
-    ) { totalBalance, user ->
-        TotalBalanceState.Success(
-            balance = NumberUtils.getRupiahCurrency(totalBalance),
-            profileUrl = user.photoUrl
+        getCurrentUserProfileUseCase.invoke(),
+        ::Pair
+    ).asResult()
+        .map { userWithBalance ->
+            when (userWithBalance) {
+                is ResultState.Success -> {
+                    val (balance, user) = userWithBalance.data
+                    TotalBalanceState.Success(
+                        balance = NumberUtils.getRupiahCurrency(balance),
+                        profileUrl = user.photoUrl
+                    )
+                }
+                is ResultState.Error -> {
+                    TotalBalanceState.Error(userWithBalance.exception ?: Exception())
+                }
+                is ResultState.Loading -> {
+                    TotalBalanceState.Loading
+                }
+            }
+        }.catch {
+            TotalBalanceState.Error(it)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            TotalBalanceState.Loading
         )
-    }.catch {
-        TotalBalanceState.Error(it)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        TotalBalanceState.Loading
-    )
 
 }
 

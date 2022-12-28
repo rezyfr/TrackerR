@@ -9,7 +9,7 @@ data class UserModel(
     val photoUrl: String,
 )
 
-fun UserFirestore.asUiModel() = UserModel(
+fun UserFirestore.asDomainModel() = UserModel(
     id = id,
     email = email,
     name = name,

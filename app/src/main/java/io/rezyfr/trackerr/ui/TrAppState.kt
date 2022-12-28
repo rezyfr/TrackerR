@@ -40,6 +40,8 @@ class TrAppState(
     var shouldShowSettingsDialog by mutableStateOf(false)
         private set
 
+    val shouldShowBottomBar: Boolean
+        @Composable get() = currentTopLevelDestination != null
     /**
      * Map of top level destinations to be used in the TopBar, BottomBar and NavRail. The key is the
      * route.

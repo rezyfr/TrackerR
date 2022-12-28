@@ -16,17 +16,13 @@
 
 package io.rezyfr.trackerr.core.ui
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 /**
@@ -62,7 +58,7 @@ private val LightDefaultColorScheme = lightColorScheme(
  * Dark default theme color scheme
  */
 private val DarkDefaultColorScheme = darkColorScheme(
-    primary = Blue80,
+    primary = Blue40,
     onPrimary = Blue10,
     primaryContainer = Blue30,
     onPrimaryContainer = Blue90,
@@ -146,7 +142,7 @@ fun TrTheme(
     androidTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = DarkDefaultColorScheme
+    val colorScheme = LightDefaultColorScheme
     val backgroundScheme = BackgroundTheme(
         color = colorScheme.surface,
         tonalElevation = 2.dp

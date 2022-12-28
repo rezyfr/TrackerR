@@ -17,7 +17,11 @@
 package io.rezyfr.trackerr.core.data.di
 
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,6 +39,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth() = Firebase.auth
 
     @Singleton
     @Provides
@@ -64,9 +72,3 @@ class DataModule {
         return WalletRepositoryImpl(collectionReference, dispatcher)
     }
 }
-
-//class FakeTransactionRepository @Inject constructor() : TransactionRepository {
-//    override fun getRecentTransaction(): Flow<List<TransactionFirestore>> {
-//        return flow { listOf<TransactionFirestore>() }
-//    }
-//}

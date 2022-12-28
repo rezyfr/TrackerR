@@ -41,4 +41,11 @@ class FirestoreModule {
     fun provideWalletCollection(db: FirebaseFirestore): CollectionReference {
         return db.collection("wallet")
     }
+
+    @Provides
+    @Singleton
+    @Named("category")
+    fun provideCategoryCollection(db: FirebaseFirestore): CollectionReference {
+        return db.collection("category")
+    }
 }
