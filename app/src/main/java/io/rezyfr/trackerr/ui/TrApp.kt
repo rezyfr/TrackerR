@@ -9,8 +9,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import io.rezyfr.trackerr.core.ui.component.AnimatedModalBottomSheetTransition
@@ -36,7 +38,7 @@ fun TrApp(
                         destinations = appState.topLevelDestinations,
                         onNavigateToDestination = appState::navigateToTopLevelDestination,
                         currentDestination = appState.currentDestination,
-                        openTransactionDialog = { appState.navController.navigate(Dialog.TransactionDialog.route) }
+//                        openTransactionDialog = { appState.navController.navigate(Dialog.TransactionDialog.route) }
                     )
                 }
             },
@@ -44,14 +46,24 @@ fun TrApp(
             contentColor = MaterialTheme.colorScheme.onBackground,
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
-                TrNavigation(
-                    appState.navController,
-                )
+            Box(modifier = Modifier.fillMaxSize().padding(it)) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ) {
+                    TrNavigation(
+                        appState.navController,
+                    )
+                }
+                FloatingActionButton(
+                    onClick = { appState.navController.navigate(Dialog.TransactionDialog.route) },
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                        .padding(16.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = null)
+                }
             }
         }
     }
@@ -62,7 +74,6 @@ private fun TrBottomBar(
     destinations: List<TopLevelDestination>,
     onNavigateToDestination: (TopLevelDestination) -> Unit,
     currentDestination: NavDestination?,
-    openTransactionDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box() {
@@ -95,11 +106,6 @@ private fun TrBottomBar(
                     label = { Text(destination.iconTextId) }
                 )
             }
-        }
-        FloatingActionButton(
-            onClick = openTransactionDialog
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = null)
         }
     }
 }

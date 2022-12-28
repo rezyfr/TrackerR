@@ -19,16 +19,21 @@ package io.rezyfr.trackerr.core.data
 import com.google.firebase.firestore.CollectionReference
 import io.rezyfr.trackerr.core.data.di.Dispatcher
 import io.rezyfr.trackerr.core.data.di.TrDispatchers
+import io.rezyfr.trackerr.core.data.model.AddTransactionFirestore
 import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface TransactionRepository {
     fun getRecentTransaction(uid: String?): Flow<List<TransactionFirestore>>
+    suspend fun saveTransaction(
+        transaction: AddTransactionFirestore
+    ): Result<Nothing?>
 }
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -42,13 +47,36 @@ class TransactionRepositoryImpl @Inject constructor(
                     .orderBy("date")
                     .limit(5)
                     .addSnapshotListener { value, error ->
-                        val transactions = value?.map {
-                            it?.toObject(TransactionFirestore::class.java)!!
-                        }
+                        val transactions = value?.toObjects(TransactionFirestore::class.java)
                         if (transactions != null) {
                             trySend(transactions)
                         }
                     }
             awaitClose { callback.remove() }
         }.flowOn(dispatcher)
+
+    override suspend fun saveTransaction(
+        transaction: AddTransactionFirestore
+    ): Result<Nothing?> {
+        return try {
+            val doc = db.document()
+            doc.set(
+                mapOf(
+                    "userId" to transaction.userId,
+                    "categoryRef" to transaction.categoryRef,
+                    "walletRef" to transaction.walletRef,
+                    "date" to transaction.date,
+                    "amount" to transaction.amount,
+                    "description" to transaction.description,
+                    "type" to transaction.type,
+                    "id" to doc.id
+                )
+            )
+            db.add(doc).await()
+            Result.success(null)
+        } catch (e: Exception) {
+            if (e.message?.contains("DocumentReference") == true) Result.success(null)
+            else Result.failure(e)
+        }
+    }
 }

@@ -70,6 +70,9 @@ class DashboardViewModel @Inject constructor(
                 is ResultState.Loading -> {
                     TotalBalanceState.Loading
                 }
+                else -> {
+                    TotalBalanceState.Uninitialized
+                }
             }
         }.catch {
             TotalBalanceState.Error(it)
@@ -83,6 +86,8 @@ class DashboardViewModel @Inject constructor(
 
 sealed interface TotalBalanceState {
     object Loading : TotalBalanceState
+    object Uninitialized : TotalBalanceState
+
     data class Error(val throwable: Throwable) : TotalBalanceState
     data class Success(
         val balance: String,

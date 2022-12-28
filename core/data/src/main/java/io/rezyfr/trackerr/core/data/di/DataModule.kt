@@ -17,10 +17,8 @@
 package io.rezyfr.trackerr.core.data.di
 
 import android.content.Context
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
@@ -28,11 +26,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.rezyfr.trackerr.core.data.*
-import kotlinx.coroutines.flow.Flow
-import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -59,7 +53,7 @@ class DataModule {
         @Named("users") collectionReference: CollectionReference,
         @ApplicationContext appContext: Context,
         @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
-    ) : UserRepository {
+    ): UserRepository {
         return UserRepositoryImpl(collectionReference, appContext, dispatcher)
     }
 
@@ -68,7 +62,16 @@ class DataModule {
     fun provideWalletRepository(
         @Named("wallet") collectionReference: CollectionReference,
         @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
-    ) : WalletRepository {
+    ): WalletRepository {
         return WalletRepositoryImpl(collectionReference, dispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCategoryRepository(
+        @Named("category") collectionReference: CollectionReference,
+        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
+    ): CategoryRepository {
+        return CategoryRepositoryImpl(collectionReference, dispatcher)
     }
 }

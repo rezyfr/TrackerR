@@ -20,7 +20,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import io.rezyfr.trackerr.core.data.di.Dispatcher
 import io.rezyfr.trackerr.core.data.di.TrDispatchers
-import io.rezyfr.trackerr.core.data.model.WalletFirestore
+import io.rezyfr.trackerr.core.data.model.CategoryFirestore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -29,43 +29,35 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-interface WalletRepository {
-    fun getTotalBalance(uid: String?): Flow<Long>
-    fun getWallets(uid: String?): Flow<List<WalletFirestore>>
-    suspend fun getWalletRefById(id: String): DocumentReference
-    suspend fun getWalletByRef(ref: String): WalletFirestore
+interface CategoryRepository {
+    fun getCategories(uid: String?): Flow<List<CategoryFirestore>>
+    suspend fun getCategoryRefById(id: String): DocumentReference
+    suspend fun getCategoryByRef(ref: String): CategoryFirestore
 }
 
-class WalletRepositoryImpl @Inject constructor(
+class CategoryRepositoryImpl @Inject constructor(
     private val db: CollectionReference,
     @Dispatcher(TrDispatchers.IO) private val dispatcher: CoroutineDispatcher
-) : WalletRepository {
-    override fun getTotalBalance(uid: String?): Flow<Long> = callbackFlow {
-        val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
-            val balanceResponse = value?.map {
-                it?.toObject(WalletFirestore::class.java)!!
-            }?.sumOf { it.balance } ?: throw Throwable(error)
-            trySend(balanceResponse)
-        }
-        awaitClose { listener.remove() }
-    }.flowOn(dispatcher)
+) : CategoryRepository {
 
-    override fun getWallets(uid: String?): Flow<List<WalletFirestore>> {
+    override fun getCategories(uid: String?): Flow<List<CategoryFirestore>> {
         return callbackFlow {
             val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
-                val walletResponse =
-                    value?.toObjects(WalletFirestore::class.java) ?: throw Throwable(error)
-                trySend(walletResponse)
+                val categoriesResponse = value?.documents?.map {
+                    val objectWithoutId = it.toObject(CategoryFirestore::class.java) ?: throw Throwable(error)
+                    objectWithoutId.copy(id = it.id)
+                } ?: listOf()
+                trySend(categoriesResponse)
             }
             awaitClose { listener.remove() }
         }.flowOn(dispatcher)
     }
 
-    override suspend fun getWalletRefById(id: String): DocumentReference {
+    override suspend fun getCategoryRefById(id: String): DocumentReference {
         return db.document(id).get().await().reference
     }
 
-    override suspend fun getWalletByRef(ref: String): WalletFirestore {
-        return db.document(ref).get().await().toObject(WalletFirestore::class.java) ?: throw Throwable()
+    override suspend fun getCategoryByRef(ref: String): CategoryFirestore {
+        return db.document(ref).get().await().toObject(CategoryFirestore::class.java) ?: throw Throwable()
     }
 }

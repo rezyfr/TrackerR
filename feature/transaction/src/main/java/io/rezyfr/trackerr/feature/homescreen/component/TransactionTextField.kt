@@ -53,7 +53,7 @@ fun TransactionTextField(
         keyboardActions = KeyboardActions(onDone = { }),
         shape = RoundedCornerShape(16.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+            focusedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
             unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
         ),
         trailingIcon = {

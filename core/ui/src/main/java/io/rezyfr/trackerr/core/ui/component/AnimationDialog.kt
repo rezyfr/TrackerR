@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 /**
  * Figured out by trial and error
  */
-private const val DIALOG_BUILD_TIME = 100L
+private const val DIALOG_BUILD_TIME = 150L
 internal const val ANIMATION_TIME = 500L
 
 @Composable
