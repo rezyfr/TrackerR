@@ -20,6 +20,7 @@ plugins {
     id("trackerr.android.application")
     id("trackerr.android.application.compose")
     id("trackerr.android.hilt")
+    id("com.google.gms.google-services")
 }
 
 android {

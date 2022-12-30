@@ -4,11 +4,11 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 
-abstract class BaseUseCaseFlow<out T> constructor(
+abstract class BaseUseCaseFlow<in P, out T> constructor(
     private val firebaseAuth: FirebaseAuth
 ) {
-    operator fun invoke(): Flow<T> {
-        return execute()
+    operator fun invoke(param: P): Flow<T> {
+        return execute(param)
             .catch {
                 if (firebaseAuth.currentUser == null) {
                     error("403")
@@ -17,5 +17,5 @@ abstract class BaseUseCaseFlow<out T> constructor(
             }
     }
 
-    protected abstract fun execute(): Flow<T>
+    protected abstract fun execute(param: P): Flow<T>
 }

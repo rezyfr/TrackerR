@@ -11,8 +11,8 @@ import javax.inject.Inject
 class GetWalletsUseCase @Inject constructor(
     private val repository: WalletRepository,
     private val firebaseAuth: FirebaseAuth
-) : BaseUseCaseFlow<List<WalletModel>>(firebaseAuth) {
-    override fun execute(): Flow<List<WalletModel>> {
+) : BaseUseCaseFlow<Unit, List<WalletModel>>(firebaseAuth) {
+    override fun execute(param: Unit): Flow<List<WalletModel>> {
         return repository.getWallets(firebaseAuth.uid)
             .map {
                 it.map { it.asDomainModel() }

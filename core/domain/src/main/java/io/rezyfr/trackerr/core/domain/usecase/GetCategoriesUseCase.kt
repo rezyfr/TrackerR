@@ -11,8 +11,8 @@ import javax.inject.Inject
 class GetCategoriesUseCase @Inject constructor(
     private val repository: CategoryRepository,
     private val firebaseAuth: FirebaseAuth
-) : BaseUseCaseFlow<List<CategoryModel>>(firebaseAuth) {
-    override fun execute(): Flow<List<CategoryModel>> {
+) : BaseUseCaseFlow<Unit, List<CategoryModel>>(firebaseAuth) {
+    override fun execute(param: Unit): Flow<List<CategoryModel>> {
         return repository.getCategories(firebaseAuth.uid)
             .map {
                 it.map { it.asDomainModel() }

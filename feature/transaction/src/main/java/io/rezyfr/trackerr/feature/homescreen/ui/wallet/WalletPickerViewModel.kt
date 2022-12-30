@@ -19,7 +19,7 @@ class WalletPickerViewModel @Inject constructor(
     private val selectedWallet = MutableStateFlow<WalletModel?>(null)
     override val initialUi: WalletPickerState = WalletPickerState.Uninitialized
     override val uiFlow: Flow<WalletPickerState>
-        get() = combine(getWalletsUseCase(), selectedWallet) { wallets, selectedWallet ->
+        get() = combine(getWalletsUseCase(Unit), selectedWallet) { wallets, selectedWallet ->
             WalletPickerState.Success(wallets.map {
                 SelectableWalletModel(
                     wallet = it,

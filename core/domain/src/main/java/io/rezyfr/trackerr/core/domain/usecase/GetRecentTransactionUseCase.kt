@@ -15,8 +15,8 @@ class GetRecentTransactionUseCase @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val walletRepository: WalletRepository,
     private val firebaseAuth: FirebaseAuth
-) : BaseUseCaseFlow<List<TransactionModel>>(firebaseAuth) {
-    override fun execute(): Flow<List<TransactionModel>> {
+) : BaseUseCaseFlow<Unit, List<TransactionModel>>(firebaseAuth) {
+    override fun execute(param: Unit): Flow<List<TransactionModel>> {
         return repository.getRecentTransaction(firebaseAuth.uid).map {
             it.map { tf ->
                 val category = categoryRepository.getCategoryByRef(tf.categoryRef?.id!!)

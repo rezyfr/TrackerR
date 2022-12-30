@@ -38,7 +38,7 @@ class DashboardViewModel @Inject constructor(
 ) : ViewModel() {
 
     val recentTransactionState: StateFlow<RecentTransactionState> =
-        getRecentTransactionUseCase()
+        getRecentTransactionUseCase(Unit)
             .catch {
                 RecentTransactionState.Error(it)
             }
@@ -52,8 +52,8 @@ class DashboardViewModel @Inject constructor(
             )
 
     val totalBalanceState: StateFlow<TotalBalanceState> = combine(
-        getTotalBalanceUseCase.invoke(),
-        getCurrentUserProfileUseCase.invoke(),
+        getTotalBalanceUseCase.invoke(Unit),
+        getCurrentUserProfileUseCase.invoke(Unit),
         ::Pair
     ).asResult()
         .map { userWithBalance ->

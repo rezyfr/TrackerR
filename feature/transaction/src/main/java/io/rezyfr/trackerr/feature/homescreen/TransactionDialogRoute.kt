@@ -41,10 +41,10 @@ fun TransactionDialogRoute(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
     viewModel: TransactionViewModel = hiltViewModel(),
-    trx: TransactionUiModel? = null
+    trxId: String? = null
 ) {
-    if(trx != null) {
-        viewModel.onEvent(TransactionEvent.Initial(trx))
+    if(trxId != null) {
+        viewModel.onEvent(TransactionEvent.Initial(trxId))
     }
     val state by viewModel.uiState.collectAsState()
     ModalTransitionDialog(

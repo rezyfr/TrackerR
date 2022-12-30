@@ -58,9 +58,9 @@ fun TrNavigation(
         }
         dialog(
             route = Dialog.TransactionDialog.route,
-            arguments = listOf(
+            arguments = listOf (
                 navArgument(Dialog.TransactionDialog.ARG_TRANSACTION) {
-                    type = NavType.ParcelableType(TransactionUiModel::class.java)
+                    type = NavType.StringType
                     nullable = true
                 }
             )
@@ -68,7 +68,8 @@ fun TrNavigation(
             TransactionDialogRoute(
                 onDismiss = {
                     navController.popBackStack()
-                }
+                },
+                trxId = it.arguments?.getString(Dialog.TransactionDialog.ARG_TRANSACTION)
             )
         }
     }

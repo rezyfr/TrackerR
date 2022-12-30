@@ -13,11 +13,14 @@ import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.core.domain.model.WalletModel
 import io.rezyfr.trackerr.core.domain.usecase.AddTransactionUseCase
+import io.rezyfr.trackerr.core.domain.usecase.GetTransactionByIdUseCase
 import io.rezyfr.trackerr.core.ui.base.SimpleFlowViewModel
 import io.rezyfr.trackerr.core.ui.component.BottomSheet
 import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
+import io.rezyfr.trackerr.feature.homescreen.model.asUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -26,7 +29,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val addTransactionUseCase: AddTransactionUseCase
+    private val addTransactionUseCase: AddTransactionUseCase,
+    private val getTransactionByIdUseCase: GetTransactionByIdUseCase
 ) : SimpleFlowViewModel<TransactionState, TransactionEvent>() {
 
     private val walletBottomSheet = BottomSheet()
@@ -62,7 +66,7 @@ class TransactionViewModel @Inject constructor(
     override suspend fun handleEvent(event: TransactionEvent) {
         when (event) {
             is TransactionEvent.Initial -> {
-                trx.value = event.transaction
+                handleInitial(event.trxId)
             }
             TransactionEvent.OnSaveTransaction -> {
                 saveTransaction()
@@ -84,6 +88,14 @@ class TransactionViewModel @Inject constructor(
             }
             is TransactionEvent.OnSelectDate -> {
                 handleDateSelected(event)
+            }
+        }
+    }
+
+    private fun handleInitial(trxId: String) {
+        viewModelScope.launch {
+            getTransactionByIdUseCase(trxId).collectLatest {
+                trx.value = it.asUiModel()
             }
         }
     }
@@ -152,7 +164,7 @@ data class TransactionState(
 )
 
 sealed interface TransactionEvent {
-    data class Initial(val transaction: TransactionUiModel) : TransactionEvent
+    data class Initial(val trxId: String) : TransactionEvent
     object OnSaveTransaction : TransactionEvent
     data class OnSelectType(val type: String) : TransactionEvent
     data class OnSelectWallet(val wallet: WalletModel) : TransactionEvent

@@ -26,7 +26,7 @@ class CategoryPickerViewModel @Inject constructor(
             CategoryPickerState.Error(it)
         }
 
-    private fun categoriesWithTypeFlow() = combine(getCategoriesUseCase(), trxType) { categories, type ->
+    private fun categoriesWithTypeFlow() = combine(getCategoriesUseCase(Unit), trxType) { categories, type ->
         categories.filter { it.type == type }
     }
 

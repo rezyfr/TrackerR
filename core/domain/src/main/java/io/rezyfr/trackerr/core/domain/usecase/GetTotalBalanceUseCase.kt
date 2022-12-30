@@ -10,8 +10,8 @@ import javax.inject.Inject
 class GetTotalBalanceUseCase @Inject constructor(
     private val repository: WalletRepository,
     private val firebaseAuth: FirebaseAuth
-) : BaseUseCaseFlow<Long>(firebaseAuth) {
-    override fun execute(): Flow<Long> {
+) : BaseUseCaseFlow<Unit, Long>(firebaseAuth) {
+    override fun execute(param: Unit): Flow<Long> {
         return repository.getTotalBalance(firebaseAuth.uid)
     }
 }

@@ -11,8 +11,8 @@ import javax.inject.Inject
 class GetCurrentUserProfileUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val firebaseAuth: FirebaseAuth
-) : BaseUseCaseFlow<UserModel>(firebaseAuth) {
-    override fun execute(): Flow<UserModel> {
+) : BaseUseCaseFlow<Unit, UserModel>(firebaseAuth) {
+    override fun execute(param: Unit): Flow<UserModel> {
         return userRepository.getCurrentUserProfile(firebaseAuth.currentUser?.uid.orEmpty()).map {
             it.asDomainModel()
         }

@@ -32,6 +32,7 @@ import javax.inject.Inject
 
 interface TransactionRepository {
     fun getRecentTransaction(uid: String?): Flow<List<TransactionFirestore>>
+    fun getTransactionById(id: String): Flow<TransactionFirestore>
     suspend fun saveTransaction(
         transaction: AddTransactionFirestore
     ): Result<Nothing?>
@@ -55,6 +56,22 @@ class TransactionRepositoryImpl @Inject constructor(
                     }
             awaitClose { callback.remove() }
         }.flowOn(dispatcher)
+
+    override fun getTransactionById(id: String): Flow<TransactionFirestore> {
+        return callbackFlow {
+            val callback =
+                db.document(id).addSnapshotListener { value, error ->
+                    if (error != null){
+                        throw Throwable(error)
+                    }
+                    val transaction = value?.toObject(TransactionFirestore::class.java)
+                    if (transaction != null) {
+                        trySend(transaction)
+                    }
+                }
+            awaitClose { callback.remove() }
+        }.flowOn(dispatcher)
+    }
 
     override suspend fun saveTransaction(
         transaction: AddTransactionFirestore
