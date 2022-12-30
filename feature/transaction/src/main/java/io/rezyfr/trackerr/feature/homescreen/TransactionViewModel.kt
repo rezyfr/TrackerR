@@ -7,16 +7,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.rezyfr.trackerr.common.ResultState
 import io.rezyfr.trackerr.common.TransactionType
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
+import io.rezyfr.trackerr.core.domain.mapper.formatToUi
+import io.rezyfr.trackerr.core.domain.mapper.fromUiToLocaleDate
 import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.core.domain.model.WalletModel
 import io.rezyfr.trackerr.core.domain.usecase.AddTransactionUseCase
 import io.rezyfr.trackerr.core.ui.base.SimpleFlowViewModel
 import io.rezyfr.trackerr.core.ui.component.BottomSheet
+import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,58 +29,40 @@ class TransactionViewModel @Inject constructor(
     private val addTransactionUseCase: AddTransactionUseCase
 ) : SimpleFlowViewModel<TransactionState, TransactionEvent>() {
 
-    private val walletBotomSheet = BottomSheet()
+    private val walletBottomSheet = BottomSheet()
     private val categoryBottomSheet = BottomSheet()
+    private val dateBottomSheet = BottomSheet()
 
     override val initialUi: TransactionState = TransactionState(
-        trxType = TransactionType.EXPENSE,
-        trxDesc = "",
-        trxWallet = null,
-        trxAmount = 0,
-        trxAmountLabel = TextFieldValue("0"),
-        trxCategory = null,
-        walletBottomSheet = walletBotomSheet,
+        trx = TransactionUiModel.emptyData(),
+        walletBottomSheet = walletBottomSheet,
         categoryBottomSheet = categoryBottomSheet,
-        saveTransactionResult = ResultState.Uninitialized
+        dateBottomSheet = dateBottomSheet,
+        saveTransactionResult = ResultState.Uninitialized,
+        enabledButton = false
     )
 
     @TransactionType
-    private var trxType = MutableStateFlow(initialUi.trxType)
-    private var trxDesc = MutableStateFlow(initialUi.trxDesc)
-    private var trxWallet = MutableStateFlow(initialUi.trxWallet)
-    private var trxCategory = MutableStateFlow(initialUi.trxCategory)
-    private var trxAmount = MutableStateFlow(initialUi.trxAmount)
-    private var trxAmountLabel = MutableStateFlow(initialUi.trxAmountLabel)
+    private var trx = MutableStateFlow(initialUi.trx)
     private var trxAddResult = MutableStateFlow(initialUi.saveTransactionResult)
 
-    private fun trxAmountFlow() = combine(trxAmount, trxAmountLabel) { amount, label ->
-        Pair(amount, label)
-    }
-
-    private fun trxPickerFlow() = combine(trxWallet, trxCategory) { wallet, category ->
-        Pair(wallet, category)
-    }
-
     override val uiFlow: Flow<TransactionState> = combine(
-        trxType, trxDesc, trxPickerFlow(), trxAmountFlow(), trxAddResult
-    ) { type, desc, (wallet, category), (amount, amountLabel), result ->
+        trx, trxAddResult
+    ) { trx, result ->
         TransactionState(
-            trxType = type,
-            trxDesc = desc,
-            trxWallet = wallet,
-            trxCategory = category,
-            trxAmount = amount,
-            trxAmountLabel = amountLabel,
-            walletBottomSheet = walletBotomSheet,
+            trx = trx,
+            walletBottomSheet = walletBottomSheet,
             categoryBottomSheet = categoryBottomSheet,
+            dateBottomSheet = dateBottomSheet,
             saveTransactionResult = result,
+            enabledButton = trx.category.id.isNotEmpty() && trx.wallet.id.isNotEmpty() && trx.amount != 0L
         )
     }
 
     override suspend fun handleEvent(event: TransactionEvent) {
         when (event) {
-            TransactionEvent.Initial -> {
-
+            is TransactionEvent.Initial -> {
+                trx.value = event.transaction
             }
             TransactionEvent.OnSaveTransaction -> {
                 saveTransaction()
@@ -95,28 +82,25 @@ class TransactionViewModel @Inject constructor(
             is TransactionEvent.OnChangeAmount -> {
                 handleAmountChange(event)
             }
+            is TransactionEvent.OnSelectDate -> {
+                handleDateSelected(event)
+            }
         }
     }
 
     private fun saveTransaction() {
         viewModelScope.launch {
-            val wallet = trxWallet.value ?: return@launch
-            val category = trxCategory.value ?: return@launch
-            val amount = trxAmount.value
-            val desc = trxDesc.value
-            val type = trxType.value
+            val transaction = trx.value ?: return@launch
 
             val result = addTransactionUseCase(
                 TransactionModel(
-                    walletId = wallet.id,
-                    categoryId = category.id,
-                    amount = amount,
-                    description = desc,
-                    type = type,
-                    wallet = wallet.name,
-                    category = category.name,
+                    amount = transaction.amount,
+                    description = transaction.description.ifEmpty { transaction.category.name },
+                    type = transaction.type,
+                    wallet = transaction.wallet,
+                    category = transaction.category,
                     id = "",
-                    date = "2022-12-12"
+                    date = transaction.date.fromUiToLocaleDate()
                 )
             )
             trxAddResult.value = result
@@ -125,52 +109,56 @@ class TransactionViewModel @Inject constructor(
 
     private fun handleAmountChange(event: TransactionEvent.OnChangeAmount) {
         if (event.amount.text.isEmpty()) {
-            trxAmount.value = 0
-            trxAmountLabel.value = event.amount
+            trx.value = trx.value.copy(amount = 0)
             return
         }
-        trxAmount.value = NumberUtils.getCleanString(event.amount.text)
-        val formattedAmount = NumberUtils.getNominalFormat(trxAmount.value)
-        trxAmountLabel.value = TextFieldValue(formattedAmount, TextRange(formattedAmount.length))
+        val amount = NumberUtils.getCleanString(event.amount.text)
+        val formattedAmount = NumberUtils.getNominalFormat(amount)
+        trx.value = trx.value.copy(
+            amount = amount,
+            amountLabel = TextFieldValue(formattedAmount, TextRange(formattedAmount.length))
+        )
     }
 
     private fun handleTypeSelected(event: TransactionEvent.OnSelectType) {
-        trxType.value = event.type
+        trx.value = trx.value.copy(type = event.type)
+    }
+
+    private fun handleDateSelected(event: TransactionEvent.OnSelectDate) {
+        trx.value = trx.value.copy(date = event.date.formatToUi())
     }
 
     private fun handleWalletSelected(event: TransactionEvent.OnSelectWallet) {
-        trxWallet.value = event.wallet
+        trx.value = trx.value.copy(wallet = event.wallet)
     }
 
     private fun handleCategorySelected(event: TransactionEvent.OnSelectCategory) {
-        trxCategory.value = event.category
+        trx.value = trx.value.copy(category = event.category)
     }
 
     private fun handleDescriptionChange(event: TransactionEvent.OnChangeDescription) {
-        trxDesc.value = event.descriptionChange
+        trx.value = trx.value.copy(description = event.description)
     }
 
 }
 
 data class TransactionState(
-    @TransactionType val trxType: String,
-    val trxDesc: String,
-    val trxAmount: Long,
-    val trxAmountLabel: TextFieldValue,
-    val trxWallet: WalletModel?,
-    val trxCategory: CategoryModel?,
+    val trx: TransactionUiModel,
     val walletBottomSheet: BottomSheet,
     val categoryBottomSheet: BottomSheet,
-    val saveTransactionResult: ResultState<Nothing?>
+    val dateBottomSheet: BottomSheet,
+    val saveTransactionResult: ResultState<Nothing?>,
+    val enabledButton: Boolean
 )
 
 sealed interface TransactionEvent {
-    object Initial : TransactionEvent
+    data class Initial(val transaction: TransactionUiModel) : TransactionEvent
     object OnSaveTransaction : TransactionEvent
     data class OnSelectType(val type: String) : TransactionEvent
-    data class OnSelectWallet(val wallet: WalletModel?) : TransactionEvent
-    data class OnSelectCategory(val category: CategoryModel?) : TransactionEvent
-    data class OnChangeDescription(val descriptionChange: String) : TransactionEvent
+    data class OnSelectWallet(val wallet: WalletModel) : TransactionEvent
+    data class OnSelectCategory(val category: CategoryModel) : TransactionEvent
+    data class OnChangeDescription(val description: String) : TransactionEvent
 
     data class OnChangeAmount(val amount: TextFieldValue) : TransactionEvent
+    data class OnSelectDate(val date: LocalDate) : TransactionEvent
 }

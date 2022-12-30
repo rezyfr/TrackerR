@@ -8,7 +8,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.rezyfr.trackerr.core.ui.PurpleGray60
+import io.rezyfr.trackerr.core.ui.PurpleGray80
 
 /**
  * TrackerR filled button with generic content slot. Wraps Material 3 [Button].
@@ -21,13 +24,29 @@ import androidx.compose.ui.unit.dp
  * content.
  * @param content The button content.
  */
+
+object TrButtonDefaults {
+    fun padding(
+        vertical: Dp = 12.dp,
+        horizontal: Dp = 24.dp
+    ): PaddingValues = PaddingValues(vertical = vertical, horizontal = horizontal)
+    fun paddingWithStartIcon(
+        start: Dp = 16.dp,
+        top: Dp = 12.dp,
+        end: Dp = 12.dp,
+        bottom: Dp = 24.dp
+    ): PaddingValues = PaddingValues(bottom = bottom, top = top, start = start, end = end)
+}
 @Composable
 fun TrButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        disabledContainerColor = PurpleGray80,
+    ),
+    contentPadding: PaddingValues = TrButtonDefaults.padding(),
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
@@ -64,9 +83,9 @@ fun TrButton(
         modifier = modifier,
         enabled = enabled,
         contentPadding = if (leadingIcon != null) {
-            ButtonDefaults.ButtonWithIconContentPadding
+            TrButtonDefaults.paddingWithStartIcon()
         } else {
-            ButtonDefaults.ContentPadding
+            TrButtonDefaults.padding()
         }
     ) {
         TrButtonContent(

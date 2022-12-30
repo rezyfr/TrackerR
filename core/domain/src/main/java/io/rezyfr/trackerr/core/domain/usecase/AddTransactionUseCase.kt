@@ -20,8 +20,8 @@ class AddTransactionUseCase @Inject constructor(
 ) : BaseUseCase<TransactionModel, Nothing?>(coroutineDispatcher, firebaseAuth) {
 
     override suspend fun execute(param: TransactionModel): ResultState<Nothing?> {
-        val walletRef = walletRepository.getWalletRefById(param.walletId)
-        val categoryRef = categoryRepository.getCategoryRefById(param.categoryId)
+        val walletRef = walletRepository.getWalletRefById(param.wallet.id)
+        val categoryRef = categoryRepository.getCategoryRefById(param.category.id)
         val response = repository.saveTransaction(
             param.asAddTransactionFirestore(
                 uid = firebaseAuth.uid.orEmpty(),

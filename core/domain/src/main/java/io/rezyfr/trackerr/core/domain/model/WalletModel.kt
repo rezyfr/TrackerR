@@ -10,7 +10,14 @@ data class WalletModel(
     val userId: String,
 ) {
     val balanceLabel: String = NumberUtils.getRupiahCurrency(balance)
-
+    companion object {
+        fun emptyData() = WalletModel(
+            id = "",
+            balance = 0L,
+            name = "",
+            userId = ""
+        )
+    }
 }
 
 fun WalletFirestore.asDomainModel() = WalletModel(

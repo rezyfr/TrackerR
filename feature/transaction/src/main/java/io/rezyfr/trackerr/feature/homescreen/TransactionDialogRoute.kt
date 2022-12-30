@@ -4,37 +4,48 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.rezyfr.trackerr.common.ResultState
-import io.rezyfr.trackerr.common.TransactionType
-import io.rezyfr.trackerr.core.ui.TrTheme
-import io.rezyfr.trackerr.core.ui.component.*
+import io.rezyfr.trackerr.core.domain.mapper.fromUiToLocaleDate
+import io.rezyfr.trackerr.core.domain.model.CategoryModel
+import io.rezyfr.trackerr.core.domain.model.TransactionModel
+import io.rezyfr.trackerr.core.domain.model.WalletModel
+import io.rezyfr.trackerr.core.ui.component.ButtonText
+import io.rezyfr.trackerr.core.ui.component.CircularReveal
+import io.rezyfr.trackerr.core.ui.component.ModalTransitionDialog
+import io.rezyfr.trackerr.core.ui.component.TrButton
 import io.rezyfr.trackerr.core.ui.typeIndicatorColor
+import io.rezyfr.trackerr.feature.homescreen.component.AmountTextField
+import io.rezyfr.trackerr.feature.homescreen.component.TransactionAppBar
 import io.rezyfr.trackerr.feature.homescreen.component.TransactionTextField
+import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
 import io.rezyfr.trackerr.feature.homescreen.ui.category.CategoryPickerBottomSheet
+import io.rezyfr.trackerr.feature.homescreen.ui.datepicker.DatePickerBottomSheet
 import io.rezyfr.trackerr.feature.homescreen.ui.wallet.WalletPickerBottomSheet
-import java.util.*
+import java.time.LocalDate
+import io.rezyfr.trackerr.core.ui.icon.Icon as AppIcon
 
 @Composable
 fun TransactionDialogRoute(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
     viewModel: TransactionViewModel = hiltViewModel(),
+    trx: TransactionUiModel? = null
 ) {
+    if(trx != null) {
+        viewModel.onEvent(TransactionEvent.Initial(trx))
+    }
     val state by viewModel.uiState.collectAsState()
     ModalTransitionDialog(
         onDismissRequest = {
@@ -45,12 +56,16 @@ fun TransactionDialogRoute(
             transitionDialogHelper::triggerAnimatedClose.invoke()
         }
         TransactionDialog(
-            onCloseClick = {
-                transitionDialogHelper::triggerAnimatedClose.invoke()
-            },
             modifier = modifier,
             state = state,
-            onEvent = viewModel::onEvent
+            onCloseClick = { transitionDialogHelper::triggerAnimatedClose.invoke() },
+            onSelectType = { (viewModel::onEvent)(TransactionEvent.OnSelectType(it)) },
+            onSelectWallet = { (viewModel::onEvent)(TransactionEvent.OnSelectWallet(it)) },
+            onChangeAmount = { (viewModel::onEvent)(TransactionEvent.OnChangeAmount(it)) },
+            onChangeDescription = { (viewModel::onEvent)(TransactionEvent.OnChangeDescription(it)) },
+            onSelectCategory = { (viewModel::onEvent)(TransactionEvent.OnSelectCategory(it)) },
+            onPickDate = { (viewModel::onEvent)(TransactionEvent.OnSelectDate(it)) },
+            onSaveTransaction = { (viewModel::onEvent)(TransactionEvent.OnSaveTransaction) }
         )
     }
 }
@@ -60,106 +75,74 @@ fun TransactionDialog(
     modifier: Modifier = Modifier,
     onCloseClick: () -> Unit = {},
     state: TransactionState,
-    onEvent: (TransactionEvent) -> Unit,
+    onSelectType: (String) -> Unit,
+    onSelectWallet: (WalletModel) -> Unit,
+    onChangeAmount: (TextFieldValue) -> Unit,
+    onChangeDescription: (String) -> Unit,
+    onSelectCategory: (CategoryModel) -> Unit,
+    onPickDate: (LocalDate) -> Unit,
+    onSaveTransaction: () -> Unit,
 ) {
     CircularReveal(
-        targetState = state.trxType.typeIndicatorColor(),
+        targetState = state.trx.type.typeIndicatorColor(),
         animationSpec = tween(1000)
-    ) {
+    ) { color ->
         Box(
             modifier
-                .background(color = it)
+                .background(color = color)
                 .fillMaxSize()
         ) {
             TransactionAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.TopCenter),
-                state = state,
+                type = state.trx.type,
                 onCloseClick = onCloseClick,
-                onEvent = onEvent
+                onSelectType = onSelectType,
             )
             TransactionForm(
-                Modifier
+                modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .wrapContentHeight()
                     .fillMaxWidth(),
-                onEvent = onEvent,
-                state = state
+                state = state,
+                onAmountChange = onChangeAmount,
+                onDescriptionChange = onChangeDescription,
+                onSaveTransaction = onSaveTransaction
             )
-
             WalletPickerBottomSheet(
                 bottomSheet = state.walletBottomSheet,
-                selected = state.trxWallet,
-                onSelect = { wallet ->
-                    onEvent(TransactionEvent.OnSelectWallet(wallet))
-                }
+                selected = state.trx.wallet,
+                onSelect = onSelectWallet
             )
             CategoryPickerBottomSheet(
                 bottomSheet = state.categoryBottomSheet,
-                selected = state.trxCategory,
-                type = state.trxType,
-                onSelect = { category ->
-                    onEvent(TransactionEvent.OnSelectCategory(category))
-                }
+                selected = state.trx.category,
+                type = state.trx.type,
+                onSelect = onSelectCategory
+            )
+            DatePickerBottomSheet(
+                bottomSheet = state.dateBottomSheet,
+                startDate = state.trx.date.fromUiToLocaleDate(),
+                onPick = onPickDate
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TransactionAppBar(
-    modifier: Modifier = Modifier,
-    onCloseClick: () -> Unit = {},
-    state: TransactionState,
-    onEvent: (TransactionEvent) -> Unit,
-) {
-    CenterAlignedTopAppBar(
-        title = {
-            MultiSelector(
-                options = listOf(TransactionType.EXPENSE, TransactionType.INCOME),
-                selectedOption = state.trxType,
-                onOptionSelect = { type ->
-                    onEvent(TransactionEvent.OnSelectType(type))
-                },
-                backgroundColor = state.trxType.typeIndicatorColor(),
-                selectedHighlightColor = MaterialTheme.colorScheme.background,
-                selectedColor = state.trxType.typeIndicatorColor(),
-                unselectedColor = MaterialTheme.colorScheme.background,
-                modifier = Modifier
-                    .height(36.dp)
-                    .padding(horizontal = 36.dp)
-            )
-        },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color.Transparent),
-        navigationIcon = {
-            IconButton(
-                onClick = onCloseClick
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-        },
-        modifier = modifier
-    )
-}
-
 @Composable
 fun TransactionForm(
     modifier: Modifier = Modifier,
-    onEvent: (TransactionEvent) -> Unit,
+    onAmountChange: (TextFieldValue) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onSaveTransaction: () -> Unit,
     state: TransactionState
 ) {
     Column(modifier) {
         AmountTextField(
-            Modifier,
-            state = state,
-            onEvent = onEvent
+            Modifier.fillMaxWidth(),
+            value = state.trx.amountLabel,
+            onValueChange = onAmountChange
         )
         Column(
             Modifier
@@ -175,27 +158,37 @@ fun TransactionForm(
         ) {
             TransactionTextField(
                 placeholder = "Category",
-                value = state.trxCategory?.name.orEmpty(),
+                trailingIcon = AppIcon.ImageVectorIcon(Icons.Default.ArrowDropDown),
+                value = state.trx.category.name,
                 onClick = {
                     state.categoryBottomSheet.expand()
                 }
             )
             TransactionTextField(
                 placeholder = "Description",
-                showTrailingIcon = false,
-                onValueChange = { onEvent.invoke(TransactionEvent.OnChangeDescription(it)) },
-                value = state.trxDesc
+                onValueChange = onDescriptionChange,
+                value = state.trx.description
             )
             TransactionTextField(
                 placeholder = "Wallet",
-                value = state.trxWallet?.name.orEmpty(),
+                trailingIcon = AppIcon.ImageVectorIcon(Icons.Default.ArrowDropDown),
+                value = state.trx.wallet.name,
                 onClick = {
                     state.walletBottomSheet.expand()
                 }
             )
+            TransactionTextField(
+                placeholder = "Date",
+                value = state.trx.date,
+                trailingIcon = AppIcon.ImageVectorIcon(Icons.Default.DateRange),
+                onClick = {
+                    state.dateBottomSheet.expand()
+                }
+            )
             Spacer(modifier = Modifier.height(32.dp))
             SaveTransactionButton(
-                onClick = { onEvent.invoke(TransactionEvent.OnSaveTransaction) },
+                onClick = onSaveTransaction,
+                enabledButton = state.enabledButton
             )
         }
     }
@@ -204,60 +197,12 @@ fun TransactionForm(
 @Composable
 fun SaveTransactionButton(
     onClick: () -> Unit = {},
+    enabledButton: Boolean
 ) {
     TrButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(
-            vertical = 12.dp,
-            horizontal = 16.dp
-        )
-    ) {
-        Text(
-            text = "Save",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.background
-        )
-    }
-}
-
-@Composable
-fun AmountTextField(
-    modifier: Modifier = Modifier,
-    onEvent: (TransactionEvent) -> Unit,
-    state: TransactionState
-) {
-    Column(modifier.padding(16.dp)) {
-        Text(
-            "how much?",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.background.copy(alpha = 0.65f)
-        )
-        BasicTextField(
-            visualTransformation = PrefixTransformation("Rp"),
-            value = state.trxAmountLabel,
-            onValueChange = {
-                onEvent.invoke(TransactionEvent.OnChangeAmount(it))
-            },
-            textStyle = MaterialTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.W500,
-                color = MaterialTheme.colorScheme.background
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.background),
-        )
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewTrxDialog() {
-    TrTheme() {
-        Surface(color = MaterialTheme.colorScheme.background) {
-//            TransactionDialog(
-//                state = TransactionState()
-//            )
-        }
-    }
+        text = { ButtonText("Save") },
+        enabled = enabledButton,
+    )
 }

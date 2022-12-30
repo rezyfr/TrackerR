@@ -22,8 +22,8 @@ class GetRecentTransactionUseCase @Inject constructor(
                 val category = categoryRepository.getCategoryByRef(tf.categoryRef?.id!!)
                 val wallet = walletRepository.getWalletByRef(tf.walletRef?.id!!)
                 tf.asDomainModel().copy(
-                    category = category.name,
-                    wallet = wallet.name
+                    category = category.asDomainModel(),
+                    wallet = wallet.asDomainModel()
                 )
             }
         }

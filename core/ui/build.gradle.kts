@@ -16,54 +16,36 @@
 
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+    id("trackerr.android.library")
+    id("trackerr.android.library.compose")
 }
 
 android {
     namespace = "io.rezyfr.trackerr.core.ui"
-    compileSdk = 33
-
-    defaultConfig {
-        minSdk = 21
-        targetSdk = 33
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildFeatures {
-        compose = true
-        aidl = false
-        buildConfig = false
-        renderScript = false
-        shaders = false
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:common"))
 
+    api(libs.androidx.compose.foundation)
+    api(libs.androidx.compose.foundation.layout)
+    api(libs.androidx.compose.material.iconsExtended)
+    api(libs.androidx.compose.material3)
+    debugApi(libs.androidx.compose.ui.tooling)
+    api(libs.androidx.compose.ui.tooling.preview)
+    api(libs.androidx.compose.ui.util)
+    api(libs.androidx.compose.runtime)
+    api(libs.androidx.compose.runtime.livedata)
+//    api(libs.androidx.metrics)
+//    api(libs.androidx.tracing.ktx)
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.6")
 
     // Compose
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+    api(libs.androidx.compose.material3)
+    implementation("dev.chrisbanes.snapper:snapper:0.3.0")
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.activity.compose)

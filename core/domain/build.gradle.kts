@@ -16,9 +16,8 @@
 
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    id("trackerr.android.library")
+    id("trackerr.android.hilt")
 }
 
 android {
@@ -43,6 +42,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled  = true
     }
 
     kotlinOptions {
@@ -55,6 +55,8 @@ dependencies {
     implementation(project(":core:common"))
     testImplementation(project(":core:testing"))
 
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.6")
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
@@ -66,6 +68,6 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     // Local tests: jUnit, coroutines, Android runner
-    testImplementation(libs.junit)
+    testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
 }

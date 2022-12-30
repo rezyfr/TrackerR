@@ -1,10 +1,11 @@
 package io.rezyfr.trackerr.feature.homescreen.ui.wallet
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,6 +16,7 @@ import io.rezyfr.trackerr.core.domain.model.SelectableWalletModel
 import io.rezyfr.trackerr.core.domain.model.WalletModel
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.component.BottomSheet
+import io.rezyfr.trackerr.core.ui.component.BottomSheetTitle
 import io.rezyfr.trackerr.core.ui.component.TrxBottomSheet
 import io.rezyfr.trackerr.core.ui.util.hiltViewModelPreviewSafe
 import io.rezyfr.trackerr.feature.homescreen.ui.wallet.component.WalletPickerRow
@@ -23,7 +25,7 @@ import io.rezyfr.trackerr.feature.homescreen.ui.wallet.component.WalletPickerRow
 fun BoxScope.WalletPickerBottomSheet(
     bottomSheet: BottomSheet,
     selected: WalletModel? = null,
-    onSelect: (WalletModel?) -> Unit = {}
+    onSelect: (WalletModel) -> Unit = {}
 ) {
     val viewModel: WalletPickerViewModel? = hiltViewModelPreviewSafe()
     val walletPickerState = viewModel?.uiState?.collectAsState()?.value ?: previewState()
@@ -35,11 +37,7 @@ fun BoxScope.WalletPickerBottomSheet(
     TrxBottomSheet(bottomSheet = bottomSheet) {
         LazyColumn() {
             item(key = "title") {
-                Text(
-                    "Choose Wallet",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 8.dp, top = 8.dp)
-                )
+                BottomSheetTitle(text = "Choose Wallet")
             }
             if (walletPickerState is WalletPickerState.Success) {
                 walletItems(

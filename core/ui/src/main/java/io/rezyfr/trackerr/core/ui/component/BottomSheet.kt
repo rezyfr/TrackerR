@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import io.rezyfr.trackerr.core.ui.DarkPurpleGray95
 import io.rezyfr.trackerr.core.ui.PurpleGray80
 
 const val EXPAND = 1
@@ -83,7 +84,7 @@ fun BoxScope.TrxBottomSheet(
             modifier = modifier
                 .fillMaxWidth()
                 .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
+                    MaterialTheme.colorScheme.surface,
                     RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                 )
         ) {

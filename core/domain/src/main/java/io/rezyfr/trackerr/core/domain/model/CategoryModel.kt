@@ -8,7 +8,16 @@ data class CategoryModel(
     val type: String,
     val name: String,
     val userId: String,
-)
+) {
+    companion object {
+        fun emptyData() = CategoryModel(
+            id = "",
+            type = "",
+            name = "",
+            userId = ""
+        )
+    }
+}
 
 fun CategoryFirestore.asDomainModel() = CategoryModel(
     id, type, name, userId

@@ -22,10 +22,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.rezyfr.trackerr.common.ResultState
 import io.rezyfr.trackerr.common.asResult
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
-import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.core.domain.usecase.GetCurrentUserProfileUseCase
 import io.rezyfr.trackerr.core.domain.usecase.GetRecentTransactionUseCase
 import io.rezyfr.trackerr.core.domain.usecase.GetTotalBalanceUseCase
+import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
+import io.rezyfr.trackerr.feature.homescreen.model.asUiModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
@@ -42,7 +43,7 @@ class DashboardViewModel @Inject constructor(
                 RecentTransactionState.Error(it)
             }
             .map {
-                RecentTransactionState.Success(data = it)
+                RecentTransactionState.Success(data = it.map { it.asUiModel() })
             }
             .stateIn(
                 viewModelScope,
@@ -98,5 +99,5 @@ sealed interface TotalBalanceState {
 sealed interface RecentTransactionState {
     object Loading : RecentTransactionState
     data class Error(val throwable: Throwable) : RecentTransactionState
-    data class Success(val data: List<TransactionModel>) : RecentTransactionState
+    data class Success(val data: List<TransactionUiModel>) : RecentTransactionState
 }

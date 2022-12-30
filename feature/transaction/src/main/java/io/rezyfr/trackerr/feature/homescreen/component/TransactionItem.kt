@@ -1,12 +1,8 @@
-package io.rezyfr.trackerr.core.ui.component
+package io.rezyfr.trackerr.feature.homescreen.component
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,15 +12,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.rezyfr.trackerr.core.domain.model.TransactionModel
+import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.transactionIndicatorColor
+import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
+import io.rezyfr.trackerr.feature.homescreen.model.asUiModel
 
 @Composable
 fun TransactionItem(
-    transaction: TransactionModel,
-    modifier: Modifier = Modifier
+    transaction: TransactionUiModel,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -32,7 +30,10 @@ fun TransactionItem(
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TransactionIcon(color = transaction.amount.transactionIndicatorColor(transaction.isIncome), Modifier)
+        TransactionIcon(
+            color = transaction.amount.transactionIndicatorColor(transaction.isIncome),
+            Modifier
+        )
         Column(
             modifier = Modifier
                 .padding(start = 8.dp, end = 16.dp)
@@ -46,13 +47,13 @@ fun TransactionItem(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = transaction.wallet,
+                text = transaction.wallet.name,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f)
             )
         }
         Text(
-            text = transaction.amountLabel,
+            text = NumberUtils.getNominalFormat(transaction.amount),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -74,6 +75,8 @@ fun TransactionIcon(color: Color, modifier: Modifier = Modifier) {
 @Composable
 private fun DarkDefaultPreview() {
     TrTheme(darkTheme = true) {
-        TransactionItem(transaction = previewTransactionModel.last())
+        TransactionItem(
+            transaction = previewTransactionModel.last().asUiModel(),
+        )
     }
 }

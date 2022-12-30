@@ -8,5 +8,7 @@ sealed class Screens(val route: String) {
 }
 
 sealed class Dialog(val route: String){
-    object TransactionDialog : Dialog("transaction_dialog")
+    object TransactionDialog : Dialog("transaction_dialog/{trxId}") {
+        const val ARG_TRANSACTION = "trxId"
+    }
 }

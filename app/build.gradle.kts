@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import io.rezyfr.trackerr.TrackerrBuildType
 
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.hilt.gradle)
-    id("com.google.gms.google-services")
-
+    id("trackerr.android.application")
+    id("trackerr.android.application.compose")
+    id("trackerr.android.hilt")
 }
 
 android {
@@ -105,11 +103,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // Compose
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-
     // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
@@ -122,11 +115,11 @@ dependencies {
     // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)
     // Instrumented tests
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    androidTestImplementation(libs.androidx.compose.ui.test)
+    debugImplementation(libs.androidx.compose.ui.testManifest)
 
     // Local tests: jUnit, coroutines, Android runner
-    testImplementation(libs.junit)
+    testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
 
     // Instrumented tests: jUnit rules and runners

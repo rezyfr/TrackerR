@@ -3,6 +3,8 @@ package io.rezyfr.trackerr.core.domain.mapper
 import android.os.Build
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils.localeIndonesia
 import java.text.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -131,14 +133,14 @@ object DateUtils {
         return SimpleDateFormat("yyyy", localeIndonesia).format(date)
     }
 
-    fun getDateFromDetailDate(stringDate: String): Date? {
+    fun getDateFromDetailDate(stringDate: String): Date {
         return try {
             val dateFormat =
                 SimpleDateFormat("dd MMMM yyyy", localeIndonesia) // 2022-07-05T15:31:51.000Z
             dateFormat.timeZone = TimeZone.getTimeZone("GMT")
             dateFormat.parse(stringDate ?: "")
         } catch (e: ParseException) {
-            null
+            Date()
         }
     }
 

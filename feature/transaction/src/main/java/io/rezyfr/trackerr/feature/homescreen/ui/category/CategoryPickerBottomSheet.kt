@@ -18,6 +18,7 @@ import io.rezyfr.trackerr.common.TransactionType
 import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.component.BottomSheet
+import io.rezyfr.trackerr.core.ui.component.BottomSheetTitle
 import io.rezyfr.trackerr.core.ui.component.TrxBottomSheet
 import io.rezyfr.trackerr.core.ui.util.hiltViewModelPreviewSafe
 
@@ -27,7 +28,7 @@ fun BoxScope.CategoryPickerBottomSheet(
     bottomSheet: BottomSheet,
     selected: CategoryModel? = null,
     @TransactionType type: String,
-    onSelect: (CategoryModel?) -> Unit = {}
+    onSelect: (CategoryModel) -> Unit = {}
 ) {
     val viewModel: CategoryPickerViewModel? = hiltViewModelPreviewSafe()
     val categoryPickerState = viewModel?.uiState?.collectAsState()?.value ?: previewState()
@@ -43,11 +44,7 @@ fun BoxScope.CategoryPickerBottomSheet(
     TrxBottomSheet(bottomSheet = bottomSheet) {
         LazyColumn() {
             item(key = "title") {
-                Text(
-                    "Choose Category",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-                )
+                BottomSheetTitle("Choose Category")
             }
             if (categoryPickerState is CategoryPickerState.Success) {
                 items(categoryPickerState.categories, key = { it.id }) {
@@ -92,7 +89,7 @@ fun Preview() {
                     userId = "1",
                     type = "expense"
                 ),
-                type = "expense"
+                type =  TransactionType.EXPENSE
             ) {}
         }
     }

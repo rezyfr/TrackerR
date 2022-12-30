@@ -16,6 +16,7 @@
 
 package io.rezyfr.trackerr.feature.dashboard
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -37,12 +38,15 @@ import coil.compose.AsyncImage
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.component.TextCell
-import io.rezyfr.trackerr.core.ui.component.TransactionItem
+import io.rezyfr.trackerr.feature.homescreen.component.TransactionItem
+import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
+import io.rezyfr.trackerr.feature.homescreen.model.asUiModel
 
 @Composable
 fun DashboardRoute(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = hiltViewModel(),
+    onTransactionClick: (TransactionUiModel) -> Unit = {}
 ) {
     val recentTransactionState by viewModel.recentTransactionState.collectAsState()
     val balanceState by viewModel.totalBalanceState.collectAsState()
@@ -50,6 +54,7 @@ fun DashboardRoute(
         recentTransactionState = recentTransactionState,
         totalBalanceState = balanceState,
         modifier = modifier,
+        onTransactionClick = onTransactionClick
     )
 }
 
@@ -58,13 +63,17 @@ fun DashboardScreen(
     recentTransactionState: RecentTransactionState,
     totalBalanceState: TotalBalanceState,
     modifier: Modifier = Modifier,
+    onTransactionClick: (TransactionUiModel) -> Unit = {},
 ) {
     LazyColumn(modifier = modifier) {
         accountTotalBalance(totalBalanceState)
         item() {
             TextCell(label = "Recent transaction", actionText = "See all")
         }
-        recentTransaction(recentTransactionState = recentTransactionState)
+        recentTransaction(
+            recentTransactionState = recentTransactionState,
+            onTransactionClick = onTransactionClick
+        )
     }
 }
 
@@ -107,11 +116,14 @@ fun LazyListScope.accountTotalBalance(totalBalanceState: TotalBalanceState) {
     }
 }
 
-fun LazyListScope.recentTransaction(recentTransactionState: RecentTransactionState) {
+fun LazyListScope.recentTransaction(
+    recentTransactionState: RecentTransactionState,
+    onTransactionClick: (TransactionUiModel) -> Unit
+) {
     when (recentTransactionState) {
         is RecentTransactionState.Success -> {
             items(recentTransactionState.data) { transaction ->
-                TransactionItem(transaction = transaction)
+                TransactionItem(transaction = transaction, modifier = Modifier.clickable { onTransactionClick(transaction) })
                 Divider()
             }
         }
@@ -125,7 +137,7 @@ private fun PortraitPreview() {
     TrTheme {
         DashboardScreen(
             recentTransactionState = RecentTransactionState.Success(
-                previewTransactionModel
+                previewTransactionModel.map { it.asUiModel() }
             ),
             totalBalanceState = TotalBalanceState.Success(
                 "Rp 1.000.000",

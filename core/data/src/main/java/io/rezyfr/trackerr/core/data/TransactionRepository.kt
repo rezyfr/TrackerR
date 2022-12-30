@@ -17,6 +17,7 @@
 package io.rezyfr.trackerr.core.data
 
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
 import io.rezyfr.trackerr.core.data.di.Dispatcher
 import io.rezyfr.trackerr.core.data.di.TrDispatchers
 import io.rezyfr.trackerr.core.data.model.AddTransactionFirestore
@@ -44,7 +45,7 @@ class TransactionRepositoryImpl @Inject constructor(
         callbackFlow {
             val callback =
                 db.whereEqualTo("userId", uid)
-                    .orderBy("date")
+                    .orderBy("date", Query.Direction.DESCENDING)
                     .limit(5)
                     .addSnapshotListener { value, error ->
                         val transactions = value?.toObjects(TransactionFirestore::class.java)

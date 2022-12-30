@@ -18,11 +18,15 @@ package io.rezyfr.trackerr.ui
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
+import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.feature.dashboard.DashboardRoute
 import io.rezyfr.trackerr.feature.homescreen.TransactionDialogRoute
+import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
 import io.rezyfr.trackerr.ui.auth.LoginRoute
 
 @Composable
@@ -43,12 +47,24 @@ fun TrNavigation(
             )
         }
         composable(Screens.DashboardScreen.route) {
-            DashboardRoute()
+            DashboardRoute(
+                onTransactionClick = {
+                    navController.navigate(Dialog.TransactionDialog.route)
+                }
+            )
         }
         composable(Screens.ProfileScreen.route) {
             DashboardRoute()
         }
-        dialog(Dialog.TransactionDialog.route) {
+        dialog(
+            route = Dialog.TransactionDialog.route,
+            arguments = listOf(
+                navArgument(Dialog.TransactionDialog.ARG_TRANSACTION) {
+                    type = NavType.ParcelableType(TransactionUiModel::class.java)
+                    nullable = true
+                }
+            )
+        ) {
             TransactionDialogRoute(
                 onDismiss = {
                     navController.popBackStack()

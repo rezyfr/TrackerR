@@ -16,18 +16,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.rezyfr.trackerr.core.ui.TrTheme
+import io.rezyfr.trackerr.core.ui.icon.Icon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionTextField(
-    value: String = "",
+    value: String? = "",
     placeholder: String = "",
     onValueChange: (String) -> Unit = {},
-    showTrailingIcon: Boolean = true,
+    trailingIcon: Icon.ImageVectorIcon? = null,
     onClick: (() -> Unit)? = null,
 ) {
     OutlinedTextField(
-        value = value,
+        value = value.orEmpty(),
         onValueChange = onValueChange,
         placeholder = {
             Text(
@@ -57,10 +58,10 @@ fun TransactionTextField(
             unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
         ),
         trailingIcon = {
-            if (showTrailingIcon) {
+            if (trailingIcon != null) {
                 Icon(
-                    Icons.Default.KeyboardArrowDown,
-                    contentDescription = "dropdown"
+                    trailingIcon.imageVector,
+                    contentDescription = "trailing_icon"
                 )
             }
         },

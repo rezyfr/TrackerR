@@ -16,9 +16,8 @@
 
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    id("trackerr.android.library")
+    id("trackerr.android.hilt")
 }
 
 android {
@@ -66,6 +65,6 @@ dependencies {
     implementation(libs.androidx.dataStore.core)
 
     // Local tests: jUnit, coroutines, Android runner
-    testImplementation(libs.junit)
+    testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
 }
