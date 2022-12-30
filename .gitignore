@@ -10,6 +10,14 @@
 /.idea
 .DS_Store
 /build
+/build-logic/build
+/core/common/build
+/core/data/build
+/core/database/build
+/core/domain/build
+/core/ui/build
+/feature/dashboard/build
+/feature/transaction/build
 /captures
 .externalNativeBuild
 .cxx
