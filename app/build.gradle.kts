@@ -17,6 +17,7 @@ import io.rezyfr.trackerr.TrackerrBuildType
 
 @Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
 plugins {
+    alias(libs.plugins.ksp)
     id("trackerr.android.application")
     id("trackerr.android.application.compose")
     id("trackerr.android.hilt")
@@ -73,6 +74,14 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    applicationVariants.all {
+        kotlin.sourceSets {
+            getByName(name) {
+                kotlin.srcDir("build/generated/ksp/$name/kotlin")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -80,6 +89,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":feature:auth"))
     implementation(project(":feature:transaction"))
     implementation(project(":feature:dashboard"))
     androidTestImplementation(project(":core:testing"))
@@ -109,9 +119,9 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
 
-
+    implementation(libs.compose.destination)
+    ksp(libs.compose.destination.ksp)
     // Google Play Services
-    implementation(libs.playservices.auth)
 
     // Tooling
     debugImplementation(libs.androidx.compose.ui.tooling)

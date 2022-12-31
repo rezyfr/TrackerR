@@ -38,6 +38,7 @@ include(":core:domain")
 include(":core:database")
 include(":core:testing")
 include(":core:ui")
+include(":feature:auth")
 include(":feature:transaction")
 include(":feature:dashboard")
 

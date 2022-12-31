@@ -11,11 +11,13 @@
 .DS_Store
 /build
 /build-logic/build
+/build-logic/convention/build
 /core/common/build
 /core/data/build
 /core/database/build
 /core/domain/build
 /core/ui/build
+/feature/auth/build
 /feature/dashboard/build
 /feature/transaction/build
 /captures

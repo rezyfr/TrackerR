@@ -17,6 +17,14 @@ class AndroidFeaturePlugin : Plugin<Project> {
                     testInstrumentationRunner =
                         "io.rezyfr.trackerr.core.testing.TrackerrTestRunner"
                 }
+
+                libraryVariants.all {
+                    sourceSets {
+                        getByName(name) {
+                            kotlin.srcDir("build/generated/ksp/$name/kotlin")
+                        }
+                    }
+                }
             }
 
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")

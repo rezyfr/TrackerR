@@ -22,4 +22,9 @@ plugins {
 
 android {
     namespace = "io.rezyfr.trackerr.feature.transaction"
+
+    ksp {
+        arg("compose-destinations.moduleName", "transaction")
+        arg("compose-destinations.mode", "destinations")
+    }
 }

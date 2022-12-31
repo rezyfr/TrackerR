@@ -58,6 +58,7 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCategoryByRef(ref: String): CategoryFirestore {
-        return db.document(ref).get().await().toObject(CategoryFirestore::class.java) ?: throw Throwable()
+        val snapshot = db.document(ref).get().await()
+        return (snapshot.toObject(CategoryFirestore::class.java) ?: throw Throwable()).copy(id = snapshot.id)
     }
 }

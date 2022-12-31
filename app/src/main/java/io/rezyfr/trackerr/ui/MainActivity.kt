@@ -19,6 +19,7 @@ package io.rezyfr.trackerr.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import io.rezyfr.trackerr.core.ui.TrTheme
 

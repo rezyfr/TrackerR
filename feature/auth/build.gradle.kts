@@ -21,14 +21,14 @@ plugins {
 }
 
 android {
-    namespace = "io.rezyfr.trackerr.feature.dashboard"
+    namespace = "io.rezyfr.trackerr.feature.auth"
 
     ksp {
-        arg("compose-destinations.moduleName", "dashboard")
+        arg("compose-destinations.moduleName", "auth")
         arg("compose-destinations.mode", "destinations")
     }
 }
 
 dependencies {
-    implementation(project(":feature:transaction"))
+    implementation(libs.playservices.auth)
 }

@@ -25,8 +25,8 @@ import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.domain.usecase.GetCurrentUserProfileUseCase
 import io.rezyfr.trackerr.core.domain.usecase.GetRecentTransactionUseCase
 import io.rezyfr.trackerr.core.domain.usecase.GetTotalBalanceUseCase
-import io.rezyfr.trackerr.feature.homescreen.model.TransactionUiModel
-import io.rezyfr.trackerr.feature.homescreen.model.asUiModel
+import io.rezyfr.trackerr.feature.transaction.model.TransactionUiModel
+import io.rezyfr.trackerr.feature.transaction.model.asUiModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
