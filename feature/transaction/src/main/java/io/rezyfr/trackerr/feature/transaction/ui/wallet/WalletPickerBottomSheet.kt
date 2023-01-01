@@ -8,10 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.rezyfr.trackerr.core.domain.model.SelectableWalletModel
 import io.rezyfr.trackerr.core.domain.model.WalletModel
 import io.rezyfr.trackerr.core.ui.TrTheme
@@ -22,13 +23,14 @@ import io.rezyfr.trackerr.core.ui.util.hiltViewModelPreviewSafe
 import io.rezyfr.trackerr.feature.transaction.ui.wallet.component.WalletPickerRow
 
 @Composable
+@OptIn(ExperimentalLifecycleComposeApi::class)
 fun BoxScope.WalletPickerBottomSheet(
     bottomSheet: BottomSheet,
     selected: WalletModel? = null,
     onSelect: (WalletModel) -> Unit = {}
 ) {
     val viewModel: WalletPickerViewModel? = hiltViewModelPreviewSafe()
-    val walletPickerState = viewModel?.uiState?.collectAsState()?.value ?: previewState()
+    val walletPickerState = viewModel?.uiState?.collectAsStateWithLifecycle()?.value ?: previewState()
 
     LaunchedEffect(key1 = selected) {
         viewModel?.onEvent(WalletPickerEvent.WalletSelected(selected))

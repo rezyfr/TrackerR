@@ -56,7 +56,6 @@ object NavGraphs {
     }
 }
 
-
 fun DestinationScope<*>.currentNavigator(): CommonNavGraphNavigator {
     return CommonNavGraphNavigator(
         navBackStackEntry.destination.navGraph(),

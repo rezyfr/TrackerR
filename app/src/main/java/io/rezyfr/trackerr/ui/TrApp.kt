@@ -3,6 +3,7 @@ package io.rezyfr.trackerr.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -42,11 +43,10 @@ fun TrApp(appState: TrAppState = rememberTrAppState()) {
         Scaffold(
             modifier = Modifier,
             bottomBar = {
-                val currentSelectedItem by appState.navController.currentScreenAsState()
                 AnimatedModalBottomSheetTransition(visible = appState.shouldShowBottomBar) {
                     TrBottomBar(
                         destinations = appState.bottomNavDestinations,
-                        selectedNavigation = currentSelectedItem,
+                        selectedNavigation = appState.currentDestination,
                         onNavigationSelected = { selected ->
                             appState.navController.navigate(selected) {
                                 launchSingleTop = true
@@ -59,7 +59,21 @@ fun TrApp(appState: TrAppState = rememberTrAppState()) {
             },
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            floatingActionButton = {
+                if (appState.shouldShowBottomBar) {
+                    FloatingActionButton(
+                        onClick = {
+                            appState.navController.navigate(NavGraphs.transaction)
+                        },
+                        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                        modifier = Modifier.offset(y = 48.dp)
+                    ) {
+                        Icon(Icons.Filled.Add, contentDescription = null)
+                    }
+                }
+            },
+            floatingActionButtonPosition = FabPosition.Center,
         ) {
             BackHandler {
                 if (!appState.navController.popBackStack()) {
@@ -78,19 +92,6 @@ fun TrApp(appState: TrAppState = rememberTrAppState()) {
                     },
                     navGraph = NavGraphs.root
                 )
-                if (appState.shouldShowBottomBar) {
-                    FloatingActionButton(
-                        onClick = {
-                            appState.navController.navigate(NavGraphs.transaction)
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(16.dp),
-                        elevation = FloatingActionButtonDefaults.elevation(0.dp),
-                    ) {
-                        Icon(Icons.Filled.Add, contentDescription = null)
-                    }
-                }
             }
         }
     }

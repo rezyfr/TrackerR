@@ -10,6 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.rezyfr.trackerr.core.ui.component.*
+import io.rezyfr.trackerr.core.ui.component.button.PrimaryButton
+import io.rezyfr.trackerr.core.ui.component.button.TrButton
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelDatePicker
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelPickerDefaults
 import java.time.LocalDate
@@ -32,7 +34,7 @@ fun BoxScope.DatePickerBottomSheet(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                TrButton(
+                PrimaryButton(
                     onClick = { bottomSheet.collapse() },
                     modifier = Modifier
                         .fillMaxWidth()

@@ -27,12 +27,15 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 interface TransactionRepository {
     fun getRecentTransaction(uid: String?): Flow<List<TransactionFirestore>>
-    fun getTransactionById(id: String): Flow<TransactionFirestore>
+    suspend fun getTransactionById(id: String): Result<TransactionFirestore>
+
+    fun deleteTransactionById(id: String): Flow<Result<Nothing?>>
     suspend fun saveTransaction(
         transaction: AddTransactionFirestore
     ): Result<Nothing?>
@@ -57,19 +60,24 @@ class TransactionRepositoryImpl @Inject constructor(
             awaitClose { callback.remove() }
         }.flowOn(dispatcher)
 
-    override fun getTransactionById(id: String): Flow<TransactionFirestore> {
+    override suspend fun getTransactionById(id: String): Result<TransactionFirestore> {
+        val trx = db.document(id).get().await()
+        return try {
+            Result.success(checkNotNull(trx.toObject(TransactionFirestore::class.java)))
+        } catch (e: Exception){
+            Result.failure<TransactionFirestore>(e)
+        }
+    }
+
+    override fun deleteTransactionById(id: String): Flow<Result<Nothing?>> {
         return callbackFlow {
             val callback =
-                db.document(id).addSnapshotListener { value, error ->
-                    if (error != null){
-                        throw Throwable(error)
-                    }
-                    val transaction = value?.toObject(TransactionFirestore::class.java)
-                    if (transaction != null) {
-                        trySend(transaction)
-                    }
+                db.document(id).delete().addOnSuccessListener {
+                    trySend(Result.success(null))
+                }.addOnFailureListener {
+                    trySend(Result.failure<Nothing>(it))
                 }
-            awaitClose { callback.remove() }
+            awaitClose { callback.asDeferred().cancel() }
         }.flowOn(dispatcher)
     }
 

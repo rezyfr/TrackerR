@@ -12,13 +12,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.ramcosta.composedestinations.annotation.Destination
@@ -33,13 +34,14 @@ interface AuthNavigator {
 }
 @RootNavGraph(start = true)
 @Destination
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun AuthScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
     navigator: AuthNavigator,
 ) {
-    val loginState by viewModel.uiState.collectAsState()
+    val loginState by viewModel.uiState.collectAsStateWithLifecycle()
     LoginScreen (
         state = loginState,
         onLogin = viewModel::storeUserData,

@@ -1,62 +1,50 @@
-package io.rezyfr.trackerr.core.ui.component
+package io.rezyfr.trackerr.core.ui.component.button
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.rezyfr.trackerr.core.ui.PurpleGray60
-import io.rezyfr.trackerr.core.ui.PurpleGray80
 
-/**
- * TrackerR filled button with generic content slot. Wraps Material 3 [Button].
- *
- * @param onClick Will be called when the user clicks the button.
- * @param modifier Modifier to be applied to the button.
- * @param enabled Controls the enabled state of the button. When `false`, this button will not be
- * clickable and will appear disabled to accessibility services.
- * @param contentPadding The spacing values to apply internally between the container and the
- * content.
- * @param content The button content.
- */
 
-object TrButtonDefaults {
-    fun padding(
-        vertical: Dp = 12.dp,
-        horizontal: Dp = 24.dp
-    ): PaddingValues = PaddingValues(vertical = vertical, horizontal = horizontal)
-    fun paddingWithStartIcon(
-        start: Dp = 16.dp,
-        top: Dp = 12.dp,
-        end: Dp = 12.dp,
-        bottom: Dp = 24.dp
-    ): PaddingValues = PaddingValues(bottom = bottom, top = top, start = start, end = end)
-}
 @Composable
-fun TrButton(
+fun DangerButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        disabledContainerColor = PurpleGray80,
-    ),
-    contentPadding: PaddingValues = TrButtonDefaults.padding(),
-    content: @Composable RowScope.() -> Unit
+    text: @Composable () -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null
 ) {
-    Button(
+    TrButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        colors = colors,
-        contentPadding = contentPadding,
-        content = content,
-        shape = RoundedCornerShape(8.dp)
+        colors = TrButtonDefaults.dangerColors(),
+        text = text,
+        leadingIcon = leadingIcon
+    )
+}
+
+@Composable
+fun PrimaryButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    text: @Composable () -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null
+) {
+    TrButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        colors = TrButtonDefaults.primaryColors(),
+        text = text,
+        leadingIcon = leadingIcon
     )
 }
 
@@ -76,9 +64,10 @@ fun TrButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
+    colors: ButtonColors,
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
-    TrButton(
+    Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
@@ -86,7 +75,9 @@ fun TrButton(
             TrButtonDefaults.paddingWithStartIcon()
         } else {
             TrButtonDefaults.padding()
-        }
+        },
+        colors = colors,
+        shape = RoundedCornerShape(8.dp)
     ) {
         TrButtonContent(
             text = text,

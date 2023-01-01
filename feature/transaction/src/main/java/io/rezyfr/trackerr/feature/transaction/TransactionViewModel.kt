@@ -1,5 +1,8 @@
 package io.rezyfr.trackerr.feature.transaction
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
@@ -13,29 +16,28 @@ import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.core.domain.model.WalletModel
 import io.rezyfr.trackerr.core.domain.usecase.AddTransactionUseCase
+import io.rezyfr.trackerr.core.domain.usecase.DeleteTransactionUseCase
 import io.rezyfr.trackerr.core.domain.usecase.GetTransactionByIdUseCase
 import io.rezyfr.trackerr.core.ui.base.SimpleFlowViewModel
 import io.rezyfr.trackerr.core.ui.component.BottomSheet
 import io.rezyfr.trackerr.feature.transaction.model.TransactionUiModel
 import io.rezyfr.trackerr.feature.transaction.model.asUiModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val addTransactionUseCase: AddTransactionUseCase,
-    private val getTransactionByIdUseCase: GetTransactionByIdUseCase
+    private val getTransactionByIdUseCase: GetTransactionByIdUseCase,
+    private val deleteTransactionUseCase: DeleteTransactionUseCase
 ) : SimpleFlowViewModel<TransactionState, TransactionEvent>() {
 
     private val walletBottomSheet = BottomSheet()
     private val categoryBottomSheet = BottomSheet()
     private val dateBottomSheet = BottomSheet()
+    private val deleteDialog = mutableStateOf(false)
 
     override val initialUi: TransactionState = TransactionState(
         trx = TransactionUiModel.emptyData(),
@@ -43,6 +45,7 @@ class TransactionViewModel @Inject constructor(
         categoryBottomSheet = categoryBottomSheet,
         dateBottomSheet = dateBottomSheet,
         saveTransactionResult = ResultState.Uninitialized,
+        deleteDialog = deleteDialog,
         enabledButton = false
     )
 
@@ -59,6 +62,7 @@ class TransactionViewModel @Inject constructor(
             categoryBottomSheet = categoryBottomSheet,
             dateBottomSheet = dateBottomSheet,
             saveTransactionResult = result,
+            deleteDialog = deleteDialog,
             enabledButton = trx.category.id.isNotEmpty() && trx.wallet.id.isNotEmpty() && trx.amount != 0L
         )
     }
@@ -89,14 +93,28 @@ class TransactionViewModel @Inject constructor(
             is TransactionEvent.OnSelectDate -> {
                 handleDateSelected(event)
             }
+            is TransactionEvent.OnClickDeleteButton -> {
+                deleteDialog.value = !deleteDialog.value
+            }
+            is TransactionEvent.OnDeleteTransaction -> {
+                viewModelScope.launch {
+                    deleteTransactionUseCase.invoke(trx.value.id).collectLatest {
+                        deleteDialog.value = !deleteDialog.value
+                        if (it.isSuccess) {
+                            trxAddResult.value = ResultState.Success(null)
+                        } else {
+                            trxAddResult.value = ResultState.Error(it.exceptionOrNull())
+                        }
+                    }
+                }
+            }
         }
     }
 
     private fun handleInitial(trxId: String) {
         viewModelScope.launch {
-            getTransactionByIdUseCase(trxId).collectLatest {
-                trx.value = it.asUiModel()
-            }
+            val trxResult = getTransactionByIdUseCase.invoke(trxId)
+            if (trxResult is ResultState.Success) trx.value = trxResult.data.asUiModel()
         }
     }
 
@@ -159,6 +177,7 @@ data class TransactionState(
     val walletBottomSheet: BottomSheet,
     val categoryBottomSheet: BottomSheet,
     val dateBottomSheet: BottomSheet,
+    val deleteDialog: State<Boolean>,
     val saveTransactionResult: ResultState<Nothing?>,
     val enabledButton: Boolean
 )
@@ -166,6 +185,8 @@ data class TransactionState(
 sealed interface TransactionEvent {
     data class Initial(val trxId: String) : TransactionEvent
     object OnSaveTransaction : TransactionEvent
+    object OnDeleteTransaction : TransactionEvent
+    object OnClickDeleteButton: TransactionEvent
     data class OnSelectType(val type: String) : TransactionEvent
     data class OnSelectWallet(val wallet: WalletModel) : TransactionEvent
     data class OnSelectCategory(val category: CategoryModel) : TransactionEvent

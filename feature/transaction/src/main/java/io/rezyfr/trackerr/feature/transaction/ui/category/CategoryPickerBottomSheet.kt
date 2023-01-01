@@ -9,11 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.rezyfr.trackerr.common.TransactionType
 import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.ui.TrTheme
@@ -24,6 +25,7 @@ import io.rezyfr.trackerr.core.ui.util.hiltViewModelPreviewSafe
 
 
 @Composable
+@OptIn(ExperimentalLifecycleComposeApi::class)
 fun BoxScope.CategoryPickerBottomSheet(
     bottomSheet: BottomSheet,
     selected: CategoryModel? = null,
@@ -31,7 +33,7 @@ fun BoxScope.CategoryPickerBottomSheet(
     onSelect: (CategoryModel) -> Unit = {}
 ) {
     val viewModel: CategoryPickerViewModel? = hiltViewModelPreviewSafe()
-    val categoryPickerState = viewModel?.uiState?.collectAsState()?.value ?: previewState()
+    val categoryPickerState = viewModel?.uiState?.collectAsStateWithLifecycle()?.value ?: previewState()
 
     LaunchedEffect(key1 = selected) {
         viewModel?.onEvent(CategoryPickerEvent.CategorySelected(selected))
