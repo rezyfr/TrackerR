@@ -62,7 +62,7 @@ fun LoginScreen(
         )
         when (state) {
             is LoginUiState.Loading -> {
-                Text("Loading")
+
             }
             is LoginUiState.Error -> {
                 Text("Error: ${state.throwable.message}")

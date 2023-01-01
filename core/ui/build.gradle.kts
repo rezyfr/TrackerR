@@ -41,7 +41,9 @@ dependencies {
 //    api(libs.androidx.tracing.ktx)
     // Core Android dependencies
     implementation(libs.androidx.core.ktx)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.6")
+
+    implementation(libs.coil.kt)
+    implementation(libs.coil.kt.compose)
 
     // Compose
     api(libs.androidx.compose.material3)

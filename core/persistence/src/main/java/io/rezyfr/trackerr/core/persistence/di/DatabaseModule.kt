@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.rezyfr.trackerr.core.database.di
+package io.rezyfr.trackerr.core.persistence.di
 
 import android.content.Context
 import androidx.room.Room
@@ -23,8 +23,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.rezyfr.trackerr.core.database.AppDatabase
-import io.rezyfr.trackerr.core.database.HomeScreenDao
+import io.rezyfr.trackerr.core.persistence.datastore.DataStoreKeys
+import io.rezyfr.trackerr.core.persistence.datastore.TrDataStore
+import io.rezyfr.trackerr.core.persistence.room.AppDatabase
+import io.rezyfr.trackerr.core.persistence.room.HomeScreenDao
+import io.rezyfr.trackerr.core.persistence.source.DataStoreSource
 import javax.inject.Singleton
 
 @Module
@@ -43,5 +46,14 @@ class DatabaseModule {
             AppDatabase::class.java,
             "HomeScreen"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreSource(
+        dataStore: TrDataStore,
+        dataStoreKeys: DataStoreKeys
+    ): DataStoreSource {
+        return DataStoreSource(dataStore, dataStoreKeys)
     }
 }

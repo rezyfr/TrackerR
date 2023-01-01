@@ -30,7 +30,7 @@ enum class BottomNavDestination(
     ),
 
     PROFILE(
-        screen = NavGraphs.dashboard,
+        screen = NavGraphs.profile,
         selectedIcon = Icon.ImageVectorIcon(Icons.Default.AccountCircle),
         unselectedIcon = Icon.ImageVectorIcon(Icons.Default.AccountCircle),
         iconTextId = "Profile",

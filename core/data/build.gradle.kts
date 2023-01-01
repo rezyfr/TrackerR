@@ -22,35 +22,10 @@ plugins {
 
 android {
     namespace = "io.rezyfr.trackerr.core.data"
-    compileSdk = 33
-
-    defaultConfig {
-        minSdk = 21
-        targetSdk = 33
-
-        testInstrumentationRunner = "io.rezyfr.trackerr.core.testing.HiltTestRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildFeatures {
-        aidl = false
-        buildConfig = false
-        renderScript = false
-        shaders = false
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {
-    implementation(project(":core:database"))
+    implementation(project(":core:persistence"))
 
     // Arch Components
     implementation(libs.hilt.android)

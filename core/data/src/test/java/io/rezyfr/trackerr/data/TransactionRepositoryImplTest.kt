@@ -24,8 +24,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import io.rezyfr.trackerr.core.data.TransactionRepositoryImpl
-import io.rezyfr.trackerr.core.database.HomeScreen
-import io.rezyfr.trackerr.core.database.HomeScreenDao
+import io.rezyfr.trackerr.core.persistence.room.HomeScreen
+import io.rezyfr.trackerr.core.persistence.room.HomeScreenDao
 
 /**
  * Unit tests for [TransactionRepositoryImpl].

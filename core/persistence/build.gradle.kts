@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package io.rezyfr.trackerr.core.database
-
-import androidx.room.Dao
-import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.PrimaryKey
-import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
-
-@Entity
-data class HomeScreen(
-    val name: String
-) {
-    @PrimaryKey(autoGenerate = true)
-    var uid: Int = 0
+@Suppress("DSL_SCOPE_VIOLATION") // Remove when fixed https://youtrack.jetbrains.com/issue/KTIJ-19369
+plugins {
+    id("trackerr.android.library")
+    id("trackerr.android.hilt")
+    alias(libs.plugins.ksp)
 }
 
-@Dao
-interface HomeScreenDao {
-    @Query("SELECT * FROM homescreen ORDER BY uid DESC LIMIT 10")
-    fun getHomeScreens(): Flow<List<HomeScreen>>
+android {
+    namespace = "io.rezyfr.trackerr.core.persistence"
+}
 
-    @Insert
-    suspend fun insertHomeScreen(item: HomeScreen)
+dependencies {
+    // Arch Components
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    implementation(libs.androidx.dataStore.preferences)
+
 }

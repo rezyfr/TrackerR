@@ -22,32 +22,6 @@ plugins {
 
 android {
     namespace = "io.rezyfr.trackerr.core.domain"
-    compileSdk = 33
-
-    defaultConfig {
-        minSdk = 21
-        targetSdk = 33
-
-        testInstrumentationRunner = "io.rezyfr.trackerr.core.testing.HiltTestRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildFeatures {
-        aidl = false
-        buildConfig = false
-        renderScript = false
-        shaders = false
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled  = true
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {

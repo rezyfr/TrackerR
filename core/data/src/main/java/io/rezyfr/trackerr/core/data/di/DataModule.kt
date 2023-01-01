@@ -17,6 +17,7 @@
 package io.rezyfr.trackerr.core.data.di
 
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.ktx.Firebase
@@ -26,6 +27,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.rezyfr.trackerr.core.data.*
+import io.rezyfr.trackerr.core.data.session.SessionManager
+import io.rezyfr.trackerr.core.persistence.source.DataStoreSource
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Named
 import javax.inject.Singleton
@@ -40,6 +43,14 @@ class DataModule {
 
     @Singleton
     @Provides
+    fun provideSessionManager(
+        @ApplicationContext context: Context,
+        firebaseAuth: FirebaseAuth,
+        dataStoreSource: DataStoreSource,
+    ) = SessionManager(dataStoreSource, firebaseAuth, context)
+
+    @Singleton
+    @Provides
     fun provideHomeScreenRepository(
         @Named("transaction") collectionReference: CollectionReference,
         @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
@@ -51,10 +62,10 @@ class DataModule {
     @Provides
     fun provideLoginRepository(
         @Named("users") collectionReference: CollectionReference,
-        @ApplicationContext appContext: Context,
-        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
+        firebaseAuth: FirebaseAuth,
+        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher,
     ): UserRepository {
-        return UserRepositoryImpl(collectionReference, appContext, dispatcher)
+        return UserRepositoryImpl(collectionReference, firebaseAuth, dispatcher)
     }
 
     @Singleton

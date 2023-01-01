@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package io.rezyfr.trackerr.core.database
+plugins {
+    alias(libs.plugins.ksp)
+    id("trackerr.android.feature")
+    id("trackerr.android.library.compose")
+}
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
+android {
+    namespace = "io.rezyfr.trackerr.feature.profile"
 
-@Database(entities = [HomeScreen::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun homeScreenDao(): HomeScreenDao
+    ksp {
+        arg("compose-destinations.moduleName", "profile")
+        arg("compose-destinations.mode", "destinations")
+    }
+}
+
+dependencies {
+
 }

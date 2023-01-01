@@ -40,6 +40,7 @@ class TrAppState(
     private val currentBottomNavDestination: NavGraphSpec?
         @Composable get() = when (currentDestination.route) {
             NavGraphs.dashboard.route -> NavGraphs.dashboard
+            NavGraphs.profile.route -> NavGraphs.profile
             else -> null
         }
 

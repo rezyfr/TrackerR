@@ -1,22 +1,12 @@
 package io.rezyfr.trackerr.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.dependency
@@ -24,15 +14,11 @@ import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import io.rezyfr.trackerr.core.ui.component.AnimatedModalBottomSheetTransition
 import io.rezyfr.trackerr.core.ui.component.TrBackground
-import io.rezyfr.trackerr.core.ui.icon.Icon
 import io.rezyfr.trackerr.navigation.NavGraphs
 import io.rezyfr.trackerr.navigation.currentNavigator
 import io.rezyfr.trackerr.navigation.navGraph
 import io.rezyfr.trackerr.navigation.print
-import io.rezyfr.trackerr.ui.navigation.BottomNavDestination
 import io.rezyfr.trackerr.ui.navigation.TrBottomBar
-import io.rezyfr.trackerr.ui.navigation.TrNavigationBar
-import io.rezyfr.trackerr.ui.navigation.TrNavigationBarItem
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -60,29 +46,9 @@ fun TrApp(appState: TrAppState = rememberTrAppState()) {
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-            floatingActionButton = {
-                if (appState.shouldShowBottomBar) {
-                    FloatingActionButton(
-                        onClick = {
-                            appState.navController.navigate(NavGraphs.transaction)
-                        },
-                        elevation = FloatingActionButtonDefaults.elevation(0.dp),
-                        modifier = Modifier.offset(y = 48.dp)
-                    ) {
-                        Icon(Icons.Filled.Add, contentDescription = null)
-                    }
-                }
-            },
-            floatingActionButtonPosition = FabPosition.Center,
         ) {
-            BackHandler {
-                if (!appState.navController.popBackStack()) {
-                    appState.navController.popBackStack()
-                }
-            }
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(it)
             ) {
                 DestinationsNavHost(

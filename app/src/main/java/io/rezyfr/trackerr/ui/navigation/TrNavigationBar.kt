@@ -9,6 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import io.rezyfr.trackerr.core.ui.DarkBlue20
+import io.rezyfr.trackerr.core.ui.Purple95
 import io.rezyfr.trackerr.core.ui.icon.Icon
 
 
@@ -104,7 +105,7 @@ fun TrNavigationBar(
     NavigationBar(
         modifier = modifier,
         contentColor = TrNavigationDefaults.navigationContentColor(),
-        containerColor = DarkBlue20.copy(alpha = 0.3f),
+        containerColor = Purple95.copy(alpha = 0.5f),
         tonalElevation = 0.dp,
         content = content
     )

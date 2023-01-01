@@ -45,12 +45,12 @@ interface TransactionDialogNavigator {
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-@Destination
+@Destination()
 fun TransactionDialog(
     modifier: Modifier = Modifier,
     navigator: TransactionDialogNavigator,
     viewModel: TransactionViewModel = hiltViewModel(),
-    trxId: String?
+    trxId: String? = null
 ) {
     if (trxId != null) {
         viewModel.onEvent(TransactionEvent.Initial(trxId))

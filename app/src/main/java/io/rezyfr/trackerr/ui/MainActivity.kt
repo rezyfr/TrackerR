@@ -19,9 +19,12 @@ package io.rezyfr.trackerr.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import io.rezyfr.trackerr.core.data.session.SessionManager
 import io.rezyfr.trackerr.core.ui.TrTheme
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

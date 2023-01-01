@@ -8,6 +8,7 @@ import com.ramcosta.composedestinations.scope.DestinationScope
 import com.ramcosta.composedestinations.spec.DestinationSpec
 import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
+import io.rezyfr.tracker.feature.profile.ui.destinations.ProfileScreenDestination
 import io.rezyfr.trackerr.feature.auth.destinations.AuthScreenDestination
 import io.rezyfr.trackerr.feature.dashboard.destinations.DashboardScreenDestination
 import io.rezyfr.trackerr.feature.transaction.destinations.TransactionDialogDestination
@@ -44,6 +45,16 @@ object NavGraphs {
         override val startRoute: Route = AuthScreenDestination
     }
 
+    val profile = object : NavGraphSpec {
+        override val destinationsByRoute: Map<String, DestinationSpec<*>> = listOf<DestinationSpec<*>>(
+            ProfileScreenDestination
+        ).associateBy { it.route }
+
+        override val route: String = "profile"
+        override val startRoute: Route = ProfileScreenDestination
+
+    }
+
     val root = object : NavGraphSpec {
         override val destinationsByRoute: Map<String, DestinationSpec<*>> = emptyMap()
         override val route: String = "root"
@@ -51,7 +62,8 @@ object NavGraphs {
         override val nestedNavGraphs: List<NavGraphSpec> = listOf(
                 auth,
                 dashboard,
-                transaction
+                transaction,
+                profile
             )
     }
 }

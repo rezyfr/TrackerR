@@ -22,9 +22,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.component.TextCell
@@ -46,6 +47,8 @@ import io.rezyfr.trackerr.feature.transaction.model.asUiModel
 
 interface DashboardNavigator {
     fun openTransactionWithId(trxId: String)
+
+    fun openNewTransactionDialog()
     fun navigateUp()
 }
 
@@ -63,26 +66,40 @@ fun DashboardScreen(
         recentTransactionState = recentTransactionState,
         totalBalanceState = balanceState,
         modifier = modifier,
-        onTransactionClick = { navigator.openTransactionWithId(it.id) }
+        onTransactionClick = { navigator.openTransactionWithId(it.id) },
+        onFabClick = { navigator.openNewTransactionDialog() }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     recentTransactionState: RecentTransactionState,
     totalBalanceState: TotalBalanceState,
     modifier: Modifier = Modifier,
     onTransactionClick: (TransactionUiModel) -> Unit = {},
+    onFabClick: () -> Unit = {}
 ) {
-    LazyColumn(modifier = modifier) {
-        accountTotalBalance(totalBalanceState)
-        item() {
-            TextCell(label = "Recent transaction", actionText = "See all")
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onFabClick,
+                elevation = FloatingActionButtonDefaults.elevation(0.dp),
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = null)
+            }
         }
-        recentTransaction(
-            recentTransactionState = recentTransactionState,
-            onTransactionClick = onTransactionClick
-        )
+    ) {
+        LazyColumn(modifier = modifier.padding(it)) {
+            accountTotalBalance(totalBalanceState)
+            item() {
+                TextCell(label = "Recent transaction", actionText = "See all")
+            }
+            recentTransaction(
+                recentTransactionState = recentTransactionState,
+                onTransactionClick = onTransactionClick
+            )
+        }
     }
 }
 
@@ -90,7 +107,11 @@ fun LazyListScope.accountTotalBalance(totalBalanceState: TotalBalanceState) {
     when (totalBalanceState) {
         is TotalBalanceState.Success -> {
             item {
-                Row(Modifier.fillMaxWidth().padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically
+                ) {
                     AsyncImage(
                         model = totalBalanceState.profileUrl,
                         contentDescription = "Profile image",
@@ -132,7 +153,9 @@ fun LazyListScope.recentTransaction(
     when (recentTransactionState) {
         is RecentTransactionState.Success -> {
             items(recentTransactionState.data) { transaction ->
-                TransactionItem(transaction = transaction, modifier = Modifier.clickable { onTransactionClick(transaction) })
+                TransactionItem(
+                    transaction = transaction,
+                    modifier = Modifier.clickable { onTransactionClick(transaction) })
                 Divider()
             }
         }

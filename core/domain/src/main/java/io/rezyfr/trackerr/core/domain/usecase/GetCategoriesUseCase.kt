@@ -1,7 +1,7 @@
 package io.rezyfr.trackerr.core.domain.usecase
 
-import com.google.firebase.auth.FirebaseAuth
 import io.rezyfr.trackerr.core.data.CategoryRepository
+import io.rezyfr.trackerr.core.data.session.SessionManager
 import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.domain.model.asDomainModel
 import kotlinx.coroutines.flow.Flow
@@ -10,10 +10,10 @@ import javax.inject.Inject
 
 class GetCategoriesUseCase @Inject constructor(
     private val repository: CategoryRepository,
-    private val firebaseAuth: FirebaseAuth
-) : BaseUseCaseFlow<Unit, List<CategoryModel>>(firebaseAuth) {
+    private val sessionManager: SessionManager,
+) : BaseUseCaseFlow<Unit, List<CategoryModel>>(sessionManager) {
     override fun execute(param: Unit): Flow<List<CategoryModel>> {
-        return repository.getCategories(firebaseAuth.uid)
+        return repository.getCategories(sessionManager.uid)
             .map {
                 it.map { it.asDomainModel() }
             }

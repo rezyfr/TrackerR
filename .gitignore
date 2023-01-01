@@ -20,6 +20,7 @@
 /feature/auth/build
 /feature/dashboard/build
 /feature/transaction/build
+/feature/profile/build
 /captures
 .externalNativeBuild
 .cxx

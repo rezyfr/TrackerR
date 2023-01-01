@@ -92,6 +92,8 @@ dependencies {
     implementation(project(":feature:auth"))
     implementation(project(":feature:transaction"))
     implementation(project(":feature:dashboard"))
+    implementation(project(":feature:profile"))
+
     androidTestImplementation(project(":core:testing"))
 
     // Core Android dependencies
