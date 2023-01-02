@@ -43,7 +43,7 @@ class DashboardViewModel @Inject constructor(
                 RecentTransactionState.Error(it)
             }
             .map {
-                RecentTransactionState.Success(data = it.map { it.asUiModel() })
+                RecentTransactionState.Success(data = it.map { it.asUiModel(withWeekDay = true) })
             }
             .stateIn(
                 viewModelScope,

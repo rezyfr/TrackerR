@@ -11,10 +11,10 @@ data class WalletModel(
 ) {
     val balanceLabel: String = NumberUtils.getRupiahCurrency(balance)
     companion object {
-        fun emptyData() = WalletModel(
-            id = "",
+        fun dummyData() = WalletModel(
+            id = "12312",
             balance = 0L,
-            name = "",
+            name = "BCA",
             userId = ""
         )
     }

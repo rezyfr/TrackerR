@@ -52,6 +52,10 @@ class TransactionRepositoryImpl @Inject constructor(
                     .orderBy("date", Query.Direction.DESCENDING)
                     .limit(5)
                     .addSnapshotListener { value, error ->
+                        if (error != null) {
+                            close(error)
+                            return@addSnapshotListener
+                        }
                         val transactions = value?.toObjects(TransactionFirestore::class.java)
                         if (transactions != null) {
                             trySend(transactions)
@@ -64,7 +68,7 @@ class TransactionRepositoryImpl @Inject constructor(
         val trx = db.document(id).get().await()
         return try {
             Result.success(checkNotNull(trx.toObject(TransactionFirestore::class.java)))
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Result.failure<TransactionFirestore>(e)
         }
     }
@@ -85,20 +89,16 @@ class TransactionRepositoryImpl @Inject constructor(
         transaction: AddTransactionFirestore
     ): Result<Nothing?> {
         return try {
-            val doc = db.document()
-            doc.set(
-                mapOf(
-                    "userId" to transaction.userId,
-                    "categoryRef" to transaction.categoryRef,
-                    "walletRef" to transaction.walletRef,
-                    "date" to transaction.date,
-                    "amount" to transaction.amount,
-                    "description" to transaction.description,
-                    "type" to transaction.type,
-                    "id" to doc.id
-                )
-            )
-            db.add(doc).await()
+            if (transaction.id.isNullOrEmpty()) {
+                val doc = db.document()
+                doc.set(transaction.copy(id = doc.id))
+                db.add(doc)
+                    .await()
+            } else {
+                db.document(transaction.id)
+                    .set(transaction)
+                    .await()
+            }
             Result.success(null)
         } catch (e: Exception) {
             if (e.message?.contains("DocumentReference") == true) Result.success(null)

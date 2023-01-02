@@ -53,11 +53,18 @@ fun TransactionItem(
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f)
             )
         }
-        Text(
-            text = NumberUtils.getRupiahCurrency(transaction.amount),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = NumberUtils.getRupiahCurrency(transaction.amount),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = transaction.date,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f)
+            )
+        }
     }
 }
 
@@ -77,7 +84,7 @@ fun TransactionIcon(color: Color, modifier: Modifier = Modifier) {
 private fun DarkDefaultPreview() {
     TrTheme(darkTheme = true) {
         TransactionItem(
-            transaction = previewTransactionModel.last().asUiModel(),
+            transaction = previewTransactionModel.last().asUiModel(true),
         )
     }
 }

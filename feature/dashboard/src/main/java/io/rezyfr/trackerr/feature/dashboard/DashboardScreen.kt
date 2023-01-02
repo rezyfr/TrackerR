@@ -37,17 +37,17 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
+import io.rezyfr.trackerr.core.ui.component.ButtonText
 import io.rezyfr.trackerr.core.ui.component.TextCell
+import io.rezyfr.trackerr.core.ui.component.button.PrimaryButton
 import io.rezyfr.trackerr.feature.transaction.component.TransactionItem
 import io.rezyfr.trackerr.feature.transaction.model.TransactionUiModel
 import io.rezyfr.trackerr.feature.transaction.model.asUiModel
 
 interface DashboardNavigator {
     fun openTransactionWithId(trxId: String)
-
     fun openNewTransactionDialog()
     fun navigateUp()
 }
@@ -67,7 +67,7 @@ fun DashboardScreen(
         totalBalanceState = balanceState,
         modifier = modifier,
         onTransactionClick = { navigator.openTransactionWithId(it.id) },
-        onFabClick = { navigator.openNewTransactionDialog() }
+        showTransactionSheet = { navigator.openNewTransactionDialog() }
     )
 }
 
@@ -78,28 +78,35 @@ fun DashboardScreen(
     totalBalanceState: TotalBalanceState,
     modifier: Modifier = Modifier,
     onTransactionClick: (TransactionUiModel) -> Unit = {},
-    onFabClick: () -> Unit = {}
+    showTransactionSheet: () -> Unit = {}
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onFabClick,
-                elevation = FloatingActionButtonDefaults.elevation(0.dp),
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = null)
-            }
+            AddNewTrxFab(onFabClick = showTransactionSheet)
         }
     ) {
         LazyColumn(modifier = modifier.padding(it)) {
             accountTotalBalance(totalBalanceState)
-            item() {
-                TextCell(label = "Recent transaction", actionText = "See all")
-            }
             recentTransaction(
                 recentTransactionState = recentTransactionState,
-                onTransactionClick = onTransactionClick
+                onTransactionClick = onTransactionClick,
+                onNoTransactionClick = showTransactionSheet
             )
         }
+    }
+}
+
+@Composable
+fun AddNewTrxFab(
+    modifier: Modifier = Modifier,
+    onFabClick: () -> Unit = {}
+) {
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = onFabClick,
+        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+    ) {
+        Icon(Icons.Filled.Add, contentDescription = null)
     }
 }
 
@@ -148,15 +155,41 @@ fun LazyListScope.accountTotalBalance(totalBalanceState: TotalBalanceState) {
 
 fun LazyListScope.recentTransaction(
     recentTransactionState: RecentTransactionState,
-    onTransactionClick: (TransactionUiModel) -> Unit
+    onTransactionClick: (TransactionUiModel) -> Unit,
+    onNoTransactionClick: () -> Unit
 ) {
     when (recentTransactionState) {
         is RecentTransactionState.Success -> {
-            items(recentTransactionState.data) { transaction ->
-                TransactionItem(
-                    transaction = transaction,
-                    modifier = Modifier.clickable { onTransactionClick(transaction) })
-                Divider()
+            if (recentTransactionState.data.isNotEmpty()) {
+                item {
+                    TextCell(label = "Recent transaction", actionText = "See all")
+                }
+                items(recentTransactionState.data) { transaction ->
+                    TransactionItem(
+                        transaction = transaction,
+                        modifier = Modifier.clickable { onTransactionClick(transaction) }
+                    )
+                    Divider()
+                }
+            } else {
+                item {
+                    Box(Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "No recent transaction",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .align(Alignment.Center),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+                item {
+                    PrimaryButton(
+                        text = { ButtonText(text = "Add new transaction") },
+                        onClick = onNoTransactionClick
+                    )
+                }
             }
         }
         else -> Unit

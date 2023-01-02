@@ -129,7 +129,7 @@ class TransactionViewModel @Inject constructor(
                     type = transaction.type,
                     wallet = transaction.wallet,
                     category = transaction.category,
-                    id = "",
+                    id = transaction.id,
                     date = transaction.date.fromUiToLocaleDate()
                 )
             )

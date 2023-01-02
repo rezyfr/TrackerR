@@ -28,18 +28,18 @@ data class TransactionUiModel(
             date = LocalDate.now().formatToUi(),
             description = "",
             type = TransactionType.EXPENSE,
-            wallet = WalletModel.emptyData(),
+            wallet = WalletModel.dummyData(),
             category = CategoryModel.emptyData(),
         )
     }
 }
 
-fun TransactionModel.asUiModel() =
+fun TransactionModel.asUiModel(withWeekDay: Boolean = false) =
     TransactionUiModel(
         id = id,
         amount = amount,
         amountLabel = TextFieldValue(amount.toString()),
-        date = date.formatToUi(),
+        date = date.formatToUi(includeWeekDay = withWeekDay),
         description = description,
         type = type,
         wallet = wallet,

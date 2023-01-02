@@ -23,6 +23,7 @@ data class TransactionModel(
     val amountLabel: String = (if (!isIncome) "-" else "") + NumberUtils.getRupiahCurrency(amount)
 
     fun asAddTransactionFirestore(
+        id: String? = null,
         uid: String,
         walletRef: DocumentReference,
         categoryRef: DocumentReference
@@ -33,7 +34,8 @@ data class TransactionModel(
         type = type,
         walletRef = walletRef,
         categoryRef = categoryRef,
-        userId = uid
+        userId = uid,
+        id = id
     )
 }
 
@@ -43,7 +45,7 @@ fun TransactionFirestore.asDomainModel() = TransactionModel(
     date = date?.toLocalDate() ?: LocalDate.now(),
     description = description.orEmpty(),
     type = type.orEmpty(),
-    wallet = wallet?.asDomainModel() ?: WalletModel.emptyData(),
+    wallet = wallet?.asDomainModel() ?: WalletModel.dummyData(),
     category = category?.asDomainModel() ?: CategoryModel.emptyData(),
 )
 
@@ -54,7 +56,7 @@ val previewTransactionModel = listOf(
         date = LocalDate.now(),
         description = "Traktir ulang tahun",
         type = TransactionType.EXPENSE,
-        wallet = WalletModel.emptyData(),
+        wallet = WalletModel.dummyData(),
         category = CategoryModel.emptyData(),
     ),
     TransactionModel(
@@ -63,7 +65,7 @@ val previewTransactionModel = listOf(
         date = LocalDate.now().plusDays(1),
         description = "Starbucks Salted Caramel Latte",
         type = TransactionType.EXPENSE,
-        wallet = WalletModel.emptyData(),
+        wallet = WalletModel.dummyData(),
         category = CategoryModel.emptyData(),
     ),
     TransactionModel(
@@ -72,7 +74,7 @@ val previewTransactionModel = listOf(
         date = LocalDate.now().plusDays(2),
         description = "PLN Oktober 2022",
         type = TransactionType.EXPENSE,
-        wallet = WalletModel.emptyData(),
+        wallet = WalletModel.dummyData(),
         category = CategoryModel.emptyData(),
     ),
     TransactionModel(
@@ -81,7 +83,7 @@ val previewTransactionModel = listOf(
         date = LocalDate.now().minusDays(12),
         description = "Gaji November 2022",
         type = TransactionType.INCOME,
-        wallet = WalletModel.emptyData(),
+        wallet = WalletModel.dummyData(),
         category = CategoryModel.emptyData(),
     ),
 )

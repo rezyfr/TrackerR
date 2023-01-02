@@ -32,11 +32,11 @@ fun DangerButton(
 
 @Composable
 fun PrimaryButton(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     text: @Composable () -> Unit,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
+    onClick: () -> Unit,
 ) {
     TrButton(
         onClick = onClick,
