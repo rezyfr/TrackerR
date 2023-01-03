@@ -1,7 +1,8 @@
 package io.rezyfr.trackerr.core.domain.usecase
 
 import io.rezyfr.trackerr.common.ResultState
-import io.rezyfr.trackerr.core.data.session.SessionManager
+import io.rezyfr.trackerr.core.domain.model.toError
+import io.rezyfr.trackerr.core.domain.session.SessionManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -18,7 +19,7 @@ abstract class BaseUseCase<in P, out R> constructor(
             execute(param)
         }
     } catch (e: Exception) {
-        ResultState.Error(exception = e)
+        ResultState.Error(exception = e.toError())
     }
 
     protected abstract suspend fun execute(param: P): ResultState<R>

@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.core.data.di
+package io.rezyfr.trackerr.core.domain
 
 import javax.inject.Qualifier
 

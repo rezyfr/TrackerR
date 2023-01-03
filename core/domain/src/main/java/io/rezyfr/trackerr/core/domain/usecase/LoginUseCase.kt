@@ -1,8 +1,7 @@
 package io.rezyfr.trackerr.core.domain.usecase
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import io.rezyfr.trackerr.common.asResult
-import io.rezyfr.trackerr.core.data.UserRepository
+import io.rezyfr.trackerr.core.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow

@@ -3,11 +3,8 @@ package io.rezyfr.trackerr.core.domain.model
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import io.rezyfr.trackerr.common.TransactionType
-import io.rezyfr.trackerr.core.data.model.AddTransactionFirestore
-import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.domain.mapper.formatToDate
-import io.rezyfr.trackerr.core.domain.mapper.toLocalDate
 import java.time.LocalDate
 
 data class TransactionModel(
@@ -18,6 +15,8 @@ data class TransactionModel(
     @TransactionType val type: String,
     val wallet: WalletModel,
     val category: CategoryModel,
+    val walletRef: DocumentReference? = null,
+    val categoryRef: DocumentReference? = null
 ) {
     val isIncome = type == TransactionType.INCOME
     val amountLabel: String = (if (!isIncome) "-" else "") + NumberUtils.getRupiahCurrency(amount)
@@ -27,27 +26,20 @@ data class TransactionModel(
         uid: String,
         walletRef: DocumentReference,
         categoryRef: DocumentReference
-    ) = AddTransactionFirestore(
-        amount = amount,
-        date = Timestamp(date.formatToDate()),
-        description = description.ifEmpty { category.name },
-        type = type,
-        walletRef = walletRef,
-        categoryRef = categoryRef,
-        userId = uid,
-        id = id
-    )
+    ) = hashMapOf (
+        "amount" to amount,
+        "date" to Timestamp(date.formatToDate()),
+        "description" to description.ifEmpty { category.name },
+        "type" to type,
+        "walletRef" to walletRef,
+        "categoryRef" to categoryRef,
+        "userId" to uid,
+    ).apply {
+        if (!id.isNullOrEmpty()) {
+            this["id"] = id
+        }
+    }
 }
-
-fun TransactionFirestore.asDomainModel() = TransactionModel(
-    id = id.orEmpty(),
-    amount = amount ?: 0L,
-    date = date?.toLocalDate() ?: LocalDate.now(),
-    description = description.orEmpty(),
-    type = type.orEmpty(),
-    wallet = wallet?.asDomainModel() ?: WalletModel.emptyData(),
-    category = category?.asDomainModel() ?: CategoryModel.emptyData(),
-)
 
 val previewTransactionModel = listOf(
     TransactionModel(

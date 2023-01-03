@@ -1,6 +1,8 @@
 package io.rezyfr.trackerr.core.data
 
-import android.content.Context
+import arrow.core.Either
+import arrow.core.leftWiden
+import arrow.core.right
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -9,10 +11,14 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.ktx.Firebase
-import io.rezyfr.trackerr.core.data.di.Dispatcher
-import io.rezyfr.trackerr.core.data.di.TrDispatchers
 import io.rezyfr.trackerr.core.data.model.UserFirestore
-import io.rezyfr.trackerr.core.persistence.source.DataStoreSource
+import io.rezyfr.trackerr.core.data.model.asDomainModel
+import io.rezyfr.trackerr.core.domain.Dispatcher
+import io.rezyfr.trackerr.core.domain.TrDispatchers
+import io.rezyfr.trackerr.core.domain.mapper.toDomain
+import io.rezyfr.trackerr.core.domain.model.TrackerrError
+import io.rezyfr.trackerr.core.domain.model.UserModel
+import io.rezyfr.trackerr.core.domain.repository.UserRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -21,13 +27,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-
-interface UserRepository {
-    val isLoggedIn: Flow<Boolean>
-    fun getCurrentUserProfile(uid: String): Flow<UserFirestore>
-    suspend fun storeUserData(google: GoogleSignInAccount, auth: AuthResult): Result<Boolean>
-    suspend fun signInFirebase(gsa: GoogleSignInAccount): Task<AuthResult>
-}
 
 class UserRepositoryImpl @Inject constructor(
     private val collectionReference: CollectionReference,
@@ -42,15 +41,22 @@ class UserRepositoryImpl @Inject constructor(
             awaitClose { listener?.asDeferred()?.cancel() }
         }
 
-    override fun getCurrentUserProfile(uid: String): Flow<UserFirestore> = callbackFlow {
-        val listener = collectionReference.document(uid).get().addOnCompleteListener {
-            trySend(
-                it.result.toObject(UserFirestore::class.java)
-                    ?: throw IllegalStateException("User not found")
-            )
-        }
-        awaitClose { listener.asDeferred().cancel() }
-    }.flowOn(ioDispatcher)
+    override fun getCurrentUserProfile(uid: String): Flow<Either<TrackerrError, UserModel>> =
+        callbackFlow {
+            val listener = collectionReference.document(uid).get().addOnCompleteListener {
+                if (it.isSuccessful) {
+                    trySend(
+                        it.result.toDomain(
+                            UserFirestore::class.java,
+                            UserFirestore::asDomainModel
+                        ).right().leftWiden()
+                    )
+                } else {
+                    close(it.exception)
+                }
+            }
+            awaitClose { listener.asDeferred().cancel() }
+        }.flowOn(ioDispatcher)
 
     override suspend fun storeUserData(
         google: GoogleSignInAccount,

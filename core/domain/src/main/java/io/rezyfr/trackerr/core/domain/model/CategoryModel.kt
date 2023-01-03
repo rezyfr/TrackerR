@@ -1,7 +1,5 @@
 package io.rezyfr.trackerr.core.domain.model
 
-import io.rezyfr.trackerr.core.data.model.CategoryFirestore
-
 
 data class CategoryModel(
     val id: String,
@@ -18,7 +16,3 @@ data class CategoryModel(
         )
     }
 }
-
-fun CategoryFirestore.asDomainModel() = CategoryModel(
-    id, type, name, userId
-)
