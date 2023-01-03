@@ -43,6 +43,8 @@ class AndroidFeaturePlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("coil.kt").get())
                 add("implementation", libs.findLibrary("coil.kt.compose").get())
 
+                add("implementation", libs.findLibrary("arrow.kt.core").get())
+
                 add("implementation", libs.findLibrary("androidx.hilt.navigation.compose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
                 add("implementation", libs.findLibrary("androidx.lifecycle.viewmodel-compose").get())

@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
 
+    implementation(libs.arrow.kt.core)
     // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -39,6 +39,8 @@ dependencies {
 
     implementation(libs.androidx.dataStore.core)
 
+    implementation(libs.arrow.kt.core)
+
     // Local tests: jUnit, coroutines, Android runner
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
