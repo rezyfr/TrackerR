@@ -93,6 +93,7 @@ val Teal30 = Color(0xFF214D56)
 val Teal40 = Color(0xFF3A656F)
 val Teal80 = Color(0xFFA2CED9)
 val Teal90 = Color(0xFFBEEAF6)
+val Subdued = PurpleGray50.copy(alpha = 0.75f)
 
 fun Long.transactionIndicatorColor(isIncome: Boolean) = when {
     isIncome -> {

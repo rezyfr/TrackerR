@@ -23,7 +23,7 @@ fun TextCell(
         Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 8.dp,
+                horizontal = 16.dp,
             ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

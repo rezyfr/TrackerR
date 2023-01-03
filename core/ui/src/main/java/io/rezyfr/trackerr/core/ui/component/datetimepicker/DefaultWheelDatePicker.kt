@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import io.rezyfr.trackerr.core.domain.mapper.isDateBefore
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 
@@ -82,7 +83,7 @@ internal fun DefaultWheelDatePicker(
                     newDayOfMonth?.let {
                         val newDate = snappedDate.withDayOfMonth(newDayOfMonth)
 
-                        val isDateBefore = isDateBefore(newDate, startDate)
+                        val isDateBefore = newDate.isDateBefore(startDate)
 
                         if(backwardsDisabled) {
                             if(!isDateBefore) {
@@ -128,9 +129,9 @@ internal fun DefaultWheelDatePicker(
 
                         val newDate = snappedDate.withMonth(newMonth)
 
-                        val isDateBefore = isDateBefore(newDate, startDate)
+                        val isDateBefore = newDate.isDateBefore(startDate)
 
-                        if(backwardsDisabled) {
+                        if (backwardsDisabled) {
                             if(!isDateBefore) {
                                 snappedDate = newDate
                             }
@@ -178,7 +179,7 @@ internal fun DefaultWheelDatePicker(
 
                             val newDate = snappedDate.withYear(newYear)
 
-                            val isDateBefore = isDateBefore(newDate, startDate)
+                            val isDateBefore = newDate.isDateBefore(startDate)
 
                             if(backwardsDisabled) {
                                 if(!isDateBefore) {
@@ -209,10 +210,6 @@ internal fun DefaultWheelDatePicker(
             }
         }
     }
-}
-
-private fun isDateBefore(date: LocalDate, currentDate: LocalDate): Boolean{
-    return date.isBefore(currentDate)
 }
 
 internal data class DayOfMonth(

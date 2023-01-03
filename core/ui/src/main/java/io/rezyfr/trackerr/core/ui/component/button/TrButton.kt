@@ -1,23 +1,46 @@
 package io.rezyfr.trackerr.core.ui.component.button
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.rezyfr.trackerr.core.ui.TrTheme
+import io.rezyfr.trackerr.core.ui.component.ButtonText
+import io.rezyfr.trackerr.core.ui.component.OutlinedButtonText
 
 
 @Composable
-fun DangerButton(
+fun TrOutlinedButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = TrButtonDefaults.padding(),
+    enabled: Boolean = true,
+    text: String,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        colors = TrButtonDefaults.outlinedColors(),
+        contentPadding = contentPadding,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+    ) {
+        TrButtonContent(
+            text = { OutlinedButtonText(text) },
+        )
+    }
+}
+
+@Composable
+fun TrDangerButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    text: @Composable () -> Unit,
+    text: String,
     leadingIcon: @Composable (() -> Unit)? = null
 ) {
     TrButton(
@@ -25,16 +48,16 @@ fun DangerButton(
         modifier = modifier,
         enabled = enabled,
         colors = TrButtonDefaults.dangerColors(),
-        text = text,
+        text = { ButtonText(text = text) },
         leadingIcon = leadingIcon
     )
 }
 
 @Composable
-fun PrimaryButton(
+fun TrPrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    text: @Composable () -> Unit,
+    text: String,
     leadingIcon: @Composable (() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
@@ -43,7 +66,7 @@ fun PrimaryButton(
         modifier = modifier,
         enabled = enabled,
         colors = TrButtonDefaults.primaryColors(),
-        text = text,
+        text = { ButtonText(text = text) },
         leadingIcon = leadingIcon
     )
 }
@@ -113,5 +136,26 @@ private fun TrButtonContent(
             )
     ) {
         text()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreviewButton() {
+    TrTheme {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            TrPrimaryButton(
+                text = "Primary Button",
+                onClick = {}
+            )
+            TrDangerButton(
+                text = "Danger Button",
+                onClick = {}
+            )
+            TrOutlinedButton(
+                text = "Outlined Button",
+                onClick = {}
+            )
+        }
     }
 }

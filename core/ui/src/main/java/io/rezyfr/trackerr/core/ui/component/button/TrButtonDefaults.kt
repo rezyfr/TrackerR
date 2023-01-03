@@ -4,8 +4,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.rezyfr.trackerr.core.ui.PurpleGray50
 import io.rezyfr.trackerr.core.ui.PurpleGray80
 
 object TrButtonDefaults {
@@ -31,5 +33,13 @@ object TrButtonDefaults {
     fun primaryColors() = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.primary,
         disabledContainerColor = PurpleGray80,
+    )
+
+    @Composable
+    fun outlinedColors() = ButtonDefaults.outlinedButtonColors(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.primary,
+        disabledContainerColor = Color.Transparent,
+        disabledContentColor = PurpleGray50,
     )
 }

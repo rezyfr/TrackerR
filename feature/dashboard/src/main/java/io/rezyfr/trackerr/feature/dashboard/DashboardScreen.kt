@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,9 +40,9 @@ import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.annotation.Destination
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
-import io.rezyfr.trackerr.core.ui.component.ButtonText
 import io.rezyfr.trackerr.core.ui.component.TextCell
-import io.rezyfr.trackerr.core.ui.component.button.PrimaryButton
+import io.rezyfr.trackerr.feature.dashboard.component.AccountBalance
+import io.rezyfr.trackerr.feature.dashboard.component.DashboardTopBar
 import io.rezyfr.trackerr.feature.transaction.component.TransactionItem
 import io.rezyfr.trackerr.feature.transaction.model.TransactionUiModel
 import io.rezyfr.trackerr.feature.transaction.model.asUiModel
@@ -87,6 +88,9 @@ fun DashboardScreen(
     ) {
         LazyColumn(modifier = modifier.padding(it)) {
             accountTotalBalance(totalBalanceState)
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             recentTransaction(
                 recentTransactionState = recentTransactionState,
                 onTransactionClick = onTransactionClick,
@@ -114,34 +118,13 @@ fun LazyListScope.accountTotalBalance(totalBalanceState: TotalBalanceState) {
     when (totalBalanceState) {
         is TotalBalanceState.Success -> {
             item {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AsyncImage(
-                        model = totalBalanceState.profileUrl,
-                        contentDescription = "Profile image",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(48.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 8.dp),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(
-                            text = "Total balance",
-                            style = MaterialTheme.typography.labelMedium,
-                        )
-                        Text(
-                            text = totalBalanceState.balance,
-                            style = MaterialTheme.typography.headlineSmall,
-                        )
-                    }
-                }
+                DashboardTopBar(
+                    profileUrl = totalBalanceState.profileUrl,
+                    selectedMonth = "October",
+                )
+            }
+            item {
+                AccountBalance(balance = totalBalanceState.balance)
             }
         }
         is TotalBalanceState.Error -> {
@@ -160,10 +143,10 @@ fun LazyListScope.recentTransaction(
 ) {
     when (recentTransactionState) {
         is RecentTransactionState.Success -> {
+            item {
+                TextCell(label = "Recent transaction", actionText = "See all")
+            }
             if (recentTransactionState.data.isNotEmpty()) {
-                item {
-                    TextCell(label = "Recent transaction", actionText = "See all")
-                }
                 items(recentTransactionState.data) { transaction ->
                     TransactionItem(
                         transaction = transaction,
@@ -173,22 +156,7 @@ fun LazyListScope.recentTransaction(
                 }
             } else {
                 item {
-                    Box(Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "No recent transaction",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
-                item {
-                    PrimaryButton(
-                        text = { ButtonText(text = "Add new transaction") },
-                        onClick = onNoTransactionClick
-                    )
+                    EmptyTransactionView(onNoTransactionClick)
                 }
             }
         }
@@ -196,14 +164,58 @@ fun LazyListScope.recentTransaction(
     }
 }
 
+@Composable
+private fun EmptyTransactionView(onNoTransactionClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
+            .clickable { onNoTransactionClick() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ReceiptLong,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+        )
+        Text(
+            text = "No transaction yet",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(top = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
+        Text(
+            text = "Tap to add your first transaction",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(top = 4.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
-private fun PortraitPreview() {
+private fun TransactionPreview() {
     TrTheme {
         DashboardScreen(
             recentTransactionState = RecentTransactionState.Success(
                 previewTransactionModel.map { it.asUiModel() }
             ),
+            totalBalanceState = TotalBalanceState.Success(
+                "Rp 1.000.000",
+                "https://lh3.googleusercontent.com/a/AEdFTp45oBYXyei183tTlYUjAeQbdt1nBEIZRS0-Om4a=s96-c"
+            ),
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+private fun EmptyTransactionPreview() {
+    TrTheme {
+        DashboardScreen(
+            recentTransactionState = RecentTransactionState.Success(listOf()),
             totalBalanceState = TotalBalanceState.Success(
                 "Rp 1.000.000",
                 "https://lh3.googleusercontent.com/a/AEdFTp45oBYXyei183tTlYUjAeQbdt1nBEIZRS0-Om4a=s96-c"

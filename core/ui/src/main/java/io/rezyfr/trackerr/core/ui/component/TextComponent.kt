@@ -29,6 +29,14 @@ fun ButtonText(text: String) {
 }
 
 @Composable
+fun OutlinedButtonText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.W500),
+    )
+}
+
+@Composable
 fun TransparentText(text: String, style: TextStyle) {
     Text(
         text,

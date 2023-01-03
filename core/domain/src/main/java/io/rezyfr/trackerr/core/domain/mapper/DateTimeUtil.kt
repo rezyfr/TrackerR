@@ -48,3 +48,6 @@ fun String.fromUiToLocaleDate(): LocalDate {
     val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
     return LocalDate.parse(this, formatter)
 }
+fun LocalDate.isDateBefore(date: LocalDate): Boolean {
+    return this.isBefore(date)
+}

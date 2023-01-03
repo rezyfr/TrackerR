@@ -24,7 +24,7 @@ import io.rezyfr.trackerr.core.ui.component.ButtonText
 import io.rezyfr.trackerr.core.ui.component.CircleImage
 import io.rezyfr.trackerr.core.ui.component.FullSpacer
 import io.rezyfr.trackerr.core.ui.component.VSpacer
-import io.rezyfr.trackerr.core.ui.component.button.DangerButton
+import io.rezyfr.trackerr.core.ui.component.button.TrDangerButton
 
 interface ProfileNavigator {
     fun onLogoutSuccess()
@@ -99,11 +99,11 @@ fun ProfileScreenContent(
 
 @Composable
 fun LogoutButton(onLogoutClick: () -> Unit) {
-    DangerButton(
+    TrDangerButton(
         onClick = {
             onLogoutClick.invoke()
         },
-        text = { ButtonText("Logout") },
+        text = "Logout",
         modifier = Modifier.padding(bottom = 16.dp)
     )
 }

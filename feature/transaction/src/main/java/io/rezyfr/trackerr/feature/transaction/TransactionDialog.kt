@@ -27,8 +27,8 @@ import io.rezyfr.trackerr.core.ui.component.ButtonText
 import io.rezyfr.trackerr.core.ui.component.CircularReveal
 import io.rezyfr.trackerr.core.ui.component.ModalTransitionDialog
 import io.rezyfr.trackerr.core.ui.component.TrAlertDialog
-import io.rezyfr.trackerr.core.ui.component.button.DangerButton
-import io.rezyfr.trackerr.core.ui.component.button.PrimaryButton
+import io.rezyfr.trackerr.core.ui.component.button.TrDangerButton
+import io.rezyfr.trackerr.core.ui.component.button.TrPrimaryButton
 import io.rezyfr.trackerr.core.ui.typeIndicatorColor
 import io.rezyfr.trackerr.feature.transaction.component.AmountTextField
 import io.rezyfr.trackerr.feature.transaction.component.TransactionAppBar
@@ -224,10 +224,10 @@ fun SaveTransactionButton(
     onClick: () -> Unit = {},
     enabledButton: Boolean
 ) {
-    PrimaryButton(
+    TrPrimaryButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        text = { ButtonText("Save") },
+        text = "Save",
         enabled = enabledButton,
     )
 }
@@ -237,10 +237,10 @@ fun DeleteTransactionButton(
     onClick: () -> Unit = {},
     enabledButton: Boolean
 ) {
-    DangerButton(
+    TrDangerButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        text = { ButtonText("Delete") },
+        text = "Delete",
         enabled = enabledButton,
     )
 }

@@ -28,7 +28,7 @@ data class TransactionUiModel(
             date = LocalDate.now().formatToUi(),
             description = "",
             type = TransactionType.EXPENSE,
-            wallet = WalletModel.dummyData(),
+            wallet = WalletModel.emptyData(),
             category = CategoryModel.emptyData(),
         )
     }

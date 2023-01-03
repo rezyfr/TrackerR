@@ -5,13 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.rezyfr.trackerr.core.ui.component.*
-import io.rezyfr.trackerr.core.ui.component.button.PrimaryButton
-import io.rezyfr.trackerr.core.ui.component.button.TrButton
+import io.rezyfr.trackerr.core.ui.component.BottomSheet
+import io.rezyfr.trackerr.core.ui.component.BottomSheetTitle
+import io.rezyfr.trackerr.core.ui.component.TrxBottomSheet
+import io.rezyfr.trackerr.core.ui.component.button.TrPrimaryButton
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelDatePicker
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelPickerDefaults
 import java.time.LocalDate
@@ -22,24 +23,33 @@ fun BoxScope.DatePickerBottomSheet(
     startDate: LocalDate,
     onPick: (LocalDate) -> Unit,
 ) {
+    var selectedDate by remember { mutableStateOf(startDate) }
     TrxBottomSheet(bottomSheet = bottomSheet) {
         LazyColumn(Modifier.fillMaxWidth()) {
             item(key = "title") {
                 BottomSheetTitle("Pick a date")
             }
             item() {
-                TransactionDatePicker(onPick = onPick, startDate = startDate)
+                TransactionDatePicker(
+                    onPick = {
+                        selectedDate = it
+                    },
+                    startDate = startDate
+                )
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                PrimaryButton(
-                    onClick = { bottomSheet.collapse() },
+                TrPrimaryButton(
+                    onClick = {
+                        onPick(selectedDate)
+                        bottomSheet.collapse()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    text = { ButtonText("Continue") }
+                    text = "Continue"
                 )
             }
         }
@@ -63,6 +73,7 @@ private fun BoxScope.TransactionDatePicker(
             )
         ),
         startDate = startDate,
-        onSnappedDate = onPick
+        onSnappedDate = onPick,
+        yearsRange = IntRange(2020, startDate.year),
     )
 }
