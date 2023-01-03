@@ -17,16 +17,17 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase
 ) : SimpleFlowViewModel<ProfileViewState, ProfileEvent>() {
 
-    private val _logoutResult: MutableStateFlow<LogoutViewState> = MutableStateFlow(LogoutViewState.Loading)
+    private val _logoutResult: MutableStateFlow<LogoutViewState> =
+        MutableStateFlow(LogoutViewState.Loading)
     val logoutResult: StateFlow<LogoutViewState> = _logoutResult
 
     override val initialUi: ProfileViewState = ProfileViewState.Loading
 
     override val uiFlow: Flow<ProfileViewState> =
-            getCurrentUserProfileUseCase.invoke(Unit).asResult().map {
+        getCurrentUserProfileUseCase.invoke(Unit).asResult().map {
             when (it) {
                 is ResultState.Success -> {
-                    ProfileViewState.Success(it.data.asUiModel())
+                    ProfileViewState.Success(it.data.orNull()!!.asUiModel())
                 }
                 is ResultState.Error -> {
                     ProfileViewState.Error(it.exception ?: Exception())

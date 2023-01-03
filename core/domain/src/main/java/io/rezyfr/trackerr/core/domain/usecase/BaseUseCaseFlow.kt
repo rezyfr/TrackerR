@@ -1,6 +1,6 @@
 package io.rezyfr.trackerr.core.domain.usecase
 
-import io.rezyfr.trackerr.core.data.session.SessionManager
+import io.rezyfr.trackerr.core.domain.session.SessionManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull

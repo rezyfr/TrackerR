@@ -1,6 +1,5 @@
 package io.rezyfr.trackerr.core.domain.model
 
-import io.rezyfr.trackerr.core.data.model.WalletFirestore
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 
 data class WalletModel(
@@ -19,13 +18,6 @@ data class WalletModel(
         )
     }
 }
-
-fun WalletFirestore.asDomainModel() = WalletModel(
-    balance = balance,
-    name = name,
-    userId = userId,
-    id = id
-)
 
 data class SelectableWalletModel(
     val wallet: WalletModel,

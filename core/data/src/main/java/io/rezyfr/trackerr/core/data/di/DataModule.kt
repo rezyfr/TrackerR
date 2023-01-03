@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2022 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package io.rezyfr.trackerr.core.data.di
 
 import android.content.Context
@@ -27,7 +11,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.rezyfr.trackerr.core.data.*
-import io.rezyfr.trackerr.core.data.session.SessionManager
+import io.rezyfr.trackerr.core.data.session.SessionManagerImpl
+import io.rezyfr.trackerr.core.domain.Dispatcher
+import io.rezyfr.trackerr.core.domain.TrDispatchers
+import io.rezyfr.trackerr.core.domain.repository.CategoryRepository
+import io.rezyfr.trackerr.core.domain.repository.TransactionRepository
+import io.rezyfr.trackerr.core.domain.repository.UserRepository
+import io.rezyfr.trackerr.core.domain.repository.WalletRepository
+import io.rezyfr.trackerr.core.domain.session.SessionManager
 import io.rezyfr.trackerr.core.persistence.source.DataStoreSource
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Named
@@ -47,7 +38,7 @@ class DataModule {
         @ApplicationContext context: Context,
         firebaseAuth: FirebaseAuth,
         dataStoreSource: DataStoreSource,
-    ) = SessionManager(dataStoreSource, firebaseAuth, context)
+    ): SessionManager = SessionManagerImpl(dataStoreSource, firebaseAuth, context)
 
     @Singleton
     @Provides
@@ -60,7 +51,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideLoginRepository(
+    fun provideUserRepository(
         @Named("users") collectionReference: CollectionReference,
         firebaseAuth: FirebaseAuth,
         @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher,

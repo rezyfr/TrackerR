@@ -1,6 +1,7 @@
 package io.rezyfr.trackerr.core.data.model
 
 import com.google.firebase.firestore.PropertyName
+import io.rezyfr.trackerr.core.domain.model.WalletModel
 
 data class WalletFirestore (
     @PropertyName("id")
@@ -11,4 +12,11 @@ data class WalletFirestore (
     val name: String = "",
     @get:PropertyName("userId")
     val userId: String = "",
+)
+
+fun WalletFirestore.asDomainModel() = WalletModel(
+    id = id,
+    balance = balance,
+    name = name,
+    userId = userId,
 )

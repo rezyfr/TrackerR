@@ -1,13 +1,14 @@
 package io.rezyfr.trackerr.core.domain.usecase
 
 import io.rezyfr.trackerr.common.ResultState
-import io.rezyfr.trackerr.core.data.CategoryRepository
-import io.rezyfr.trackerr.core.data.TransactionRepository
-import io.rezyfr.trackerr.core.data.WalletRepository
-import io.rezyfr.trackerr.core.data.di.Dispatcher
-import io.rezyfr.trackerr.core.data.di.TrDispatchers
-import io.rezyfr.trackerr.core.data.session.SessionManager
+import io.rezyfr.trackerr.core.domain.Dispatcher
+import io.rezyfr.trackerr.core.domain.TrDispatchers
+import io.rezyfr.trackerr.core.domain.mapper.getLeft
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
+import io.rezyfr.trackerr.core.domain.repository.CategoryRepository
+import io.rezyfr.trackerr.core.domain.repository.TransactionRepository
+import io.rezyfr.trackerr.core.domain.repository.WalletRepository
+import io.rezyfr.trackerr.core.domain.session.SessionManager
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
@@ -22,15 +23,21 @@ class AddTransactionUseCase @Inject constructor(
     override suspend fun execute(param: TransactionModel): ResultState<Nothing?> {
         val walletRef = walletRepository.getWalletRefById(param.wallet.id)
         val categoryRef = categoryRepository.getCategoryRefById(param.category.id)
-        val response = repository.saveTransaction(
-            param.asAddTransactionFirestore(
-                uid = sessionManager.uid,
-                walletRef = walletRef,
-                categoryRef = categoryRef,
-                id = param.id
+        if (categoryRef.isRight() && walletRef.isRight()) {
+            val response = repository.saveTransaction(
+                param.asAddTransactionFirestore(
+                    uid = sessionManager.uid,
+                    walletRef = walletRef.orNull()!!,
+                    categoryRef = categoryRef.orNull()!!,
+                    id = param.id
+                )
             )
-        )
-        return if (response.isSuccess) ResultState.Success(null)
-        else ResultState.Error(response.exceptionOrNull())
+            return if (response.isRight()) ResultState.Success(null)
+            else ResultState.Error(response.getLeft()!!)
+        }
+
+        if (walletRef.isLeft()) return ResultState.Error(walletRef.getLeft()!!)
+        if (categoryRef.isLeft()) return ResultState.Error(categoryRef.getLeft()!!)
+        return ResultState.Error(RuntimeException("Unknown error"))
     }
 }

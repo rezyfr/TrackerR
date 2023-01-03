@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.rezyfr.trackerr.core.data.UserRepository
+import io.rezyfr.trackerr.core.domain.repository.UserRepository
 import io.rezyfr.trackerr.core.domain.usecase.LoginUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
