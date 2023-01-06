@@ -9,6 +9,6 @@ interface TransactionRepository {
     fun getRecentTransaction(uid: String?): Flow<Either<TrackerrError, List<TransactionModel>>>
     suspend fun getTransactionById(id: String): Either<TrackerrError, TransactionModel>
 
-    fun deleteTransactionById(id: String): Flow<Either<TrackerrError, Nothing?>>
+    suspend fun deleteTransactionById(id: String): Either<TrackerrError, Nothing?>
     suspend fun saveTransaction(transaction: HashMap<String, Any>): Either<TrackerrError, Nothing?>
 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
     val isLoggedIn: Flow<Boolean>
-    fun getCurrentUserProfile(uid: String): Flow<Either<TrackerrError, UserModel>>
+    suspend fun getCurrentUserProfile(uid: String): Either<TrackerrError, UserModel>
     suspend fun storeUserData(google: GoogleSignInAccount, auth: AuthResult): Result<Boolean>
     suspend fun signInFirebase(gsa: GoogleSignInAccount): Task<AuthResult>
 }

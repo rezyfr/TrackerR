@@ -27,7 +27,7 @@ class WalletRepositoryImpl @Inject constructor(
     @Dispatcher(TrDispatchers.IO) private val dispatcher: CoroutineDispatcher
 ) : WalletRepository {
     override fun getTotalBalance(uid: String?): Flow<Either<TrackerrError, Long>> = callbackFlow {
-        val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
+        val listener = db.withUserId(uid).addSnapshotListener { value, error ->
             if (error != null) {
                 close(error.toError())
             }
@@ -43,7 +43,7 @@ class WalletRepositoryImpl @Inject constructor(
 
     override fun getWallets(uid: String?): Flow<Either<TrackerrError, List<WalletModel>>> {
         return callbackFlow {
-            val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
+            val listener = db.withUserId(uid).addSnapshotListener { value, error ->
                 if (error != null) {
                     close(error.toError())
                 }

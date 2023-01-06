@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase,
+    private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : SimpleFlowViewModel<ProfileViewState, ProfileEvent>() {
 
@@ -23,20 +23,20 @@ class ProfileViewModel @Inject constructor(
 
     override val initialUi: ProfileViewState = ProfileViewState.Loading
 
-    override val uiFlow: Flow<ProfileViewState> =
-        getCurrentUserProfileUseCase.invoke(Unit).asResult().map {
-            when (it) {
-                is ResultState.Success -> {
-                    ProfileViewState.Success(it.data.orNull()!!.asUiModel())
-                }
-                is ResultState.Error -> {
-                    ProfileViewState.Error(it.exception ?: Exception())
-                }
-                else -> {
-                    ProfileViewState.Loading
-                }
+    override val uiFlow: Flow<ProfileViewState> = flow {
+        when (val result = getCurrentUserProfileUseCase.invoke(Unit)) {
+            is ResultState.Success -> {
+                ProfileViewState.Success(result.data.asUiModel())
+            }
+            is ResultState.Error -> {
+                ProfileViewState.Error(result.exception ?: Exception())
+            }
+            else -> {
+                ProfileViewState.Loading
             }
         }
+    }
+
 
     override suspend fun handleEvent(event: ProfileEvent) {
         when (event) {

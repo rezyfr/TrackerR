@@ -18,7 +18,7 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     getRecentTransactionUseCase: GetRecentTransactionUseCase,
     getTotalBalanceUseCase: GetTotalBalanceUseCase,
-    getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase
+    private val getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase
 ) : ViewModel() {
 
     val recentTransactionState: StateFlow<RecentTransactionState> =
@@ -39,18 +39,14 @@ class DashboardViewModel @Inject constructor(
                 RecentTransactionState.Loading
             )
 
-    val totalBalanceState: StateFlow<TotalBalanceState> = combine(
-        getTotalBalanceUseCase.invoke(Unit),
-        getCurrentUserProfileUseCase.invoke(Unit),
-        ::Pair
-    ).asResult()
+    val totalBalanceState: StateFlow<TotalBalanceState> = getTotalBalanceUseCase.invoke(Unit).asResult()
         .map { userWithBalance ->
             when (userWithBalance) {
                 is ResultState.Success -> {
-                    val (balance, user) = userWithBalance.data
+                    val (balance, user) = Pair(userWithBalance.data, getCurrentUserProfileUseCase(Unit))
                     TotalBalanceState.Success(
                         balance = NumberUtils.getRupiahCurrency(balance),
-                        profileUrl = user.orNull()!!.photoUrl
+                        profileUrl = (user as? ResultState.Success)?.data?.photoUrl.orEmpty()
                     )
                 }
                 is ResultState.Error -> {

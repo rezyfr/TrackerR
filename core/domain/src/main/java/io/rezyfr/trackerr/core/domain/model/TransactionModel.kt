@@ -2,6 +2,8 @@ package io.rezyfr.trackerr.core.domain.model
 
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import io.rezyfr.trackerr.common.TransactionType
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.domain.mapper.formatToDate
@@ -34,6 +36,7 @@ data class TransactionModel(
         "walletRef" to walletRef,
         "categoryRef" to categoryRef,
         "userId" to uid,
+        "lastModified" to FieldValue.serverTimestamp()
     ).apply {
         if (!id.isNullOrEmpty()) {
             this["id"] = id

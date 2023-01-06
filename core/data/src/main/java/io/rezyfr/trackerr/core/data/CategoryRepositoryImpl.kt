@@ -8,16 +8,22 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import io.rezyfr.trackerr.core.data.model.CategoryFirestore
 import io.rezyfr.trackerr.core.data.model.asDomainModel
+import io.rezyfr.trackerr.core.data.util.cacheFirstSnapshot
+import io.rezyfr.trackerr.core.data.util.handleAwait
+import io.rezyfr.trackerr.core.data.util.handleDocumentSnapshot
+import io.rezyfr.trackerr.core.data.util.withUserId
 import io.rezyfr.trackerr.core.domain.Dispatcher
 import io.rezyfr.trackerr.core.domain.DomainResult
 import io.rezyfr.trackerr.core.domain.TrDispatchers
 import io.rezyfr.trackerr.core.domain.mapper.toDomain
 import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.domain.model.TrackerrError
+import io.rezyfr.trackerr.core.domain.model.toError
 import io.rezyfr.trackerr.core.domain.repository.CategoryRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -28,22 +34,24 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override fun getCategories(uid: String?): Flow<Either<TrackerrError, List<CategoryModel>>> {
         return callbackFlow {
-            val listener = db.whereEqualTo("userId", uid).addSnapshotListener { value, error ->
-                if (error != null) {
-                    trySend(TrackerrError(error.message.orEmpty()).left())
-                }
-                if (value != null) {
-                    val categories = value.documents.map { doc ->
-                        doc.toDomain(
-                            CategoryFirestore::class.java,
-                            CategoryFirestore::asDomainModel
-                        )
-                            .copy(id = doc.id)
+            val listener = db.withUserId(uid.orEmpty())
+                .cacheFirstSnapshot(
+                    onSuccess = {
+                        val categories = it.documents.map { doc ->
+                            doc.toDomain(
+                                CategoryFirestore::class.java,
+                                CategoryFirestore::asDomainModel
+                            )
+                                .copy(id = doc.id)
+                        }
+                        trySend(categories.right())
+                    },
+                    onError = {
+                        trySend(it.toError().left())
+                        close(it)
                     }
-                    trySend(categories.right())
-                }
-            }
-            awaitClose { listener.remove() }
+                )
+            awaitClose { listener.asDeferred().cancel() }
         }.catch {
             emit(TrackerrError(it.message.orEmpty()).left())
         }.flowOn(dispatcher)
@@ -56,9 +64,9 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCategoryByRef(ref: String): DomainResult<CategoryModel> {
-        val snapshot = db.document(ref).get().await()
-        return snapshot.toDomain(CategoryFirestore::class.java, CategoryFirestore::asDomainModel).copy(id = snapshot.id)
-            .right()
-            .leftWiden()
+        return db.document(ref).get().handleDocumentSnapshot(
+            firestoreClass = CategoryFirestore::class.java,
+            snapshotMapper = CategoryFirestore::asDomainModel
+        )
     }
 }

@@ -13,6 +13,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.ktx.Firebase
 import io.rezyfr.trackerr.core.data.model.UserFirestore
 import io.rezyfr.trackerr.core.data.model.asDomainModel
+import io.rezyfr.trackerr.core.data.util.handleDocumentSnapshot
 import io.rezyfr.trackerr.core.domain.Dispatcher
 import io.rezyfr.trackerr.core.domain.TrDispatchers
 import io.rezyfr.trackerr.core.domain.mapper.toDomain
@@ -41,22 +42,12 @@ class UserRepositoryImpl @Inject constructor(
             awaitClose { listener?.asDeferred()?.cancel() }
         }
 
-    override fun getCurrentUserProfile(uid: String): Flow<Either<TrackerrError, UserModel>> =
-        callbackFlow {
-            val listener = collectionReference.document(uid).get().addOnCompleteListener {
-                if (it.isSuccessful) {
-                    trySend(
-                        it.result.toDomain(
-                            UserFirestore::class.java,
-                            UserFirestore::asDomainModel
-                        ).right().leftWiden()
-                    )
-                } else {
-                    close(it.exception)
-                }
-            }
-            awaitClose { listener.asDeferred().cancel() }
-        }.flowOn(ioDispatcher)
+    override suspend fun getCurrentUserProfile(uid: String): Either<TrackerrError, UserModel> =
+        collectionReference.document(uid).get()
+                .handleDocumentSnapshot(
+                    UserFirestore::class.java,
+                    UserFirestore::asDomainModel
+                )
 
     override suspend fun storeUserData(
         google: GoogleSignInAccount,

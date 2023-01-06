@@ -97,17 +97,16 @@ class TransactionViewModel @Inject constructor(
                 deleteDialog.value = !deleteDialog.value
             }
             is TransactionEvent.OnDeleteTransaction -> {
-                viewModelScope.launch {
-                    deleteTransactionUseCase.invoke(trx.value.id).collectLatest {
-                        deleteDialog.value = !deleteDialog.value
-                        if (it.isSuccess) {
-                            trxAddResult.value = ResultState.Success(null)
-                        } else {
-                            trxAddResult.value = ResultState.Error(it.exceptionOrNull())
-                        }
-                    }
-                }
+                handleDeleteTransaction()
             }
+        }
+    }
+
+    private fun handleDeleteTransaction() {
+        viewModelScope.launch {
+            val result = deleteTransactionUseCase.invoke(trx.value.id)
+            deleteDialog.value = !deleteDialog.value
+            trxAddResult.value = result
         }
     }
 
@@ -186,7 +185,7 @@ sealed interface TransactionEvent {
     data class Initial(val trxId: String) : TransactionEvent
     object OnSaveTransaction : TransactionEvent
     object OnDeleteTransaction : TransactionEvent
-    object OnClickDeleteButton: TransactionEvent
+    object OnClickDeleteButton : TransactionEvent
     data class OnSelectType(val type: String) : TransactionEvent
     data class OnSelectWallet(val wallet: WalletModel) : TransactionEvent
     data class OnSelectCategory(val category: CategoryModel) : TransactionEvent

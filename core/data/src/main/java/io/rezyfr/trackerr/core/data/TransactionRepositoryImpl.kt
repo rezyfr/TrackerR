@@ -10,6 +10,7 @@ import io.rezyfr.trackerr.core.domain.Dispatcher
 import io.rezyfr.trackerr.core.domain.TrDispatchers
 import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 import io.rezyfr.trackerr.core.data.model.asDomainModel
+import io.rezyfr.trackerr.core.data.util.*
 import io.rezyfr.trackerr.core.domain.mapper.toDomain
 import io.rezyfr.trackerr.core.domain.model.TrackerrError
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
@@ -31,65 +32,52 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getRecentTransaction(uid: String?): Flow<Either<TrackerrError, List<TransactionModel>>> =
         callbackFlow {
             val callback =
-                db.whereEqualTo("userId", uid)
+                db.withUserId(uid.orEmpty())
                     .orderBy("date", Query.Direction.DESCENDING)
                     .limit(5)
-                    .addSnapshotListener { value, error ->
-                        if (error != null) {
-                            close(error.toError())
-                        }
-                        if (value != null) {
+                    .cacheFirstSnapshot(
+                        onSuccess = {
                             trySend(
-                                value.toDomain(
+                                it.toDomain(
                                     TransactionFirestore::class.java,
                                     TransactionFirestore::asDomainModel
                                 ).right().leftWiden()
                             )
+                        }, onError = {
+                            trySend(it.toError().left())
+                            close(it)
                         }
-                    }
-            awaitClose { callback.remove() }
+                    )
+            awaitClose { callback.asDeferred().cancel() }
         }.flowOn(dispatcher)
 
     override suspend fun getTransactionById(id: String): Either<TrackerrError, TransactionModel> {
-        val trx = db.document(id).get().await()
-        return try {
-            checkNotNull(trx.toDomain(TransactionFirestore::class.java, TransactionFirestore::asDomainModel)).right().leftWiden()
-        } catch (e: Exception) {
-            e.toError().left()
-        }
+        return db.document(id).get()
+            .handleDocumentSnapshot(
+                TransactionFirestore::class.java,
+                TransactionFirestore::asDomainModel
+            )
     }
 
-    override fun deleteTransactionById(id: String): Flow<Either<TrackerrError, Nothing?>> {
-        return callbackFlow {
-            val callback =
-                db.document(id).delete().addOnSuccessListener {
-                    trySend(null.right().leftWiden())
-                }.addOnFailureListener {
-                    trySend(it.toError().left())
-                }
-            awaitClose { callback.asDeferred().cancel() }
-        }.flowOn(dispatcher)
+    override suspend fun deleteTransactionById(id: String): Either<TrackerrError, Nothing?> {
+        return db.document(id).delete().handleNullAwait()
     }
 
     override suspend fun saveTransaction(
         transaction: HashMap<String, Any>
     ): Either<TrackerrError, Nothing?> {
-        return try {
-            if (transaction["id"] == null) {
-                val doc = db.document()
-                transaction["id"] = doc.id
-                doc.set(transaction)
-                db.add(doc)
-                    .await()
-            } else {
-                db.document(transaction["id"] as String)
-                    .set(transaction)
-                    .await()
-            }
-            Either.Right(null)
-        } catch (e: Exception) {
-            if (e.message?.contains("DocumentReference") == true) Either.Right(null)
-            else e.toError().left()
+        val task = if (transaction["id"] == null) {
+            val doc = db.document()
+            transaction["id"] = doc.id
+            doc.set(transaction)
+            db.add(doc)
+        } else {
+            db.document(transaction["id"] as String).set(transaction)
         }
+        return task.handleNullAwait(
+            onFalseException = { e ->
+                e.message?.contains("DocumentReference") == true
+            }
+        )
     }
 }
