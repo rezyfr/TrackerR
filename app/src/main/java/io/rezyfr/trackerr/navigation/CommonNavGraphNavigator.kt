@@ -16,7 +16,7 @@ import io.rezyfr.trackerr.feature.transaction.destinations.TransactionDialogDest
 class CommonNavGraphNavigator(
     private val navGraph: NavGraphSpec,
     private val navController: NavController
-) : AuthNavigator, DashboardNavigator, TransactionDialogNavigator, ProfileNavigator {
+) : AuthNavigator, DashboardNavigator, TransactionDialogNavigator, ProfileNavigator, CategoryDialogNavigator {
     override fun onLoginSuccess() {
         navController.navigate(DashboardScreenDestination) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -48,6 +48,6 @@ class CommonNavGraphNavigator(
     }
 
     override fun onClickCategory() {
-        navController.navigate("category")
+        navController.navigate(CategoryDialogDestination())
     }
 }

@@ -79,6 +79,8 @@ dependencies {
     implementation(project(":feature:transaction"))
     implementation(project(":feature:dashboard"))
     implementation(project(":feature:profile"))
+    implementation(project(":feature:category"))
+    implementation(project(":feature:wallet"))
 
     androidTestImplementation(project(":core:testing"))
 
