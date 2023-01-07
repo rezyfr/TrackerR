@@ -6,11 +6,11 @@ import arrow.core.leftWiden
 import arrow.core.right
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
-import io.rezyfr.trackerr.core.domain.Dispatcher
-import io.rezyfr.trackerr.core.domain.TrDispatchers
 import io.rezyfr.trackerr.core.data.model.TransactionFirestore
 import io.rezyfr.trackerr.core.data.model.asDomainModel
 import io.rezyfr.trackerr.core.data.util.*
+import io.rezyfr.trackerr.core.domain.Dispatcher
+import io.rezyfr.trackerr.core.domain.TrDispatchers
 import io.rezyfr.trackerr.core.domain.mapper.toDomain
 import io.rezyfr.trackerr.core.domain.model.TrackerrError
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.asDeferred
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -65,7 +64,7 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override suspend fun saveTransaction(
         transaction: HashMap<String, Any>
-    ): Either<TrackerrError, Nothing?> {
+    ): Either<TrackerrError, Nothing?> = try {
         val task = if (transaction["id"] == null) {
             val doc = db.document()
             transaction["id"] = doc.id
@@ -74,10 +73,9 @@ class TransactionRepositoryImpl @Inject constructor(
         } else {
             db.document(transaction["id"] as String).set(transaction)
         }
-        return task.handleNullAwait(
-            onFalseException = { e ->
-                e.message?.contains("DocumentReference") == true
-            }
-        )
+        task.handleNullAwait()
+    } catch (e: Exception) {
+        if (e.message?.contains("DocumentReference") == true) Either.Right(null)
+        else e.toError().left()
     }
 }

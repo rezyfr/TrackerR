@@ -6,9 +6,18 @@ import arrow.core.leftWiden
 import arrow.core.right
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
+import io.rezyfr.trackerr.core.domain.Dispatcher
+import io.rezyfr.trackerr.core.domain.TrDispatchers
 import io.rezyfr.trackerr.core.domain.mapper.toDomain
 import io.rezyfr.trackerr.core.domain.model.TrackerrError
 import io.rezyfr.trackerr.core.domain.model.toError
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
 
 fun CollectionReference.withUserId(uid: String) = this.whereEqualTo("userId", uid)
@@ -95,12 +104,12 @@ suspend inline fun <T, R, reified F : Any> Task<T>.handleAwait(
 ): Either<TrackerrError, R> = try {
     val result = this.await()
     when {
-        snapshotClass.isInstance(DocumentSnapshot::class.java) -> {
+        snapshotClass.isAssignableFrom(DocumentSnapshot::class.java) -> {
             val mappedResult =
                 checkNotNull((result as DocumentSnapshot).toDomain(firestoreClass, snapshotMapper))
             mappedResult.right().leftWiden()
         }
-        snapshotClass.isInstance(DocumentReference::class.java) -> {
+        snapshotClass.isAssignableFrom(DocumentReference::class.java) -> {
             checkNotNull(
                 (result as DocumentReference).get().result?.toDomain(
                     firestoreClass,
@@ -112,6 +121,16 @@ suspend inline fun <T, R, reified F : Any> Task<T>.handleAwait(
             throw Exception("Unknown snapshot class")
         }
     }
+} catch (e: Exception) {
+    Either.Left(e.toError())
+}
+
+suspend inline fun <T, R, reified F : Any> Task<T>.handleQuerySnapshot(
+    firestoreClass: Class<F>,
+    snapshotMapper: (F) -> R,
+): Either<TrackerrError, List<R>> = try {
+    val result = this.await()
+    checkNotNull((result as QuerySnapshot).toDomain(firestoreClass, snapshotMapper)).right().leftWiden()
 } catch (e: Exception) {
     Either.Left(e.toError())
 }

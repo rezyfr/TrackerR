@@ -28,4 +28,6 @@ include(":feature:auth")
 include(":feature:transaction")
 include(":feature:dashboard")
 include(":feature:profile")
+include(":feature:wallet")
+include(":feature:category")
 

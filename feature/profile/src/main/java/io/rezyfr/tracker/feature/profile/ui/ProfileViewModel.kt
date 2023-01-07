@@ -24,7 +24,7 @@ class ProfileViewModel @Inject constructor(
     override val initialUi: ProfileViewState = ProfileViewState.Loading
 
     override val uiFlow: Flow<ProfileViewState> = flow {
-        when (val result = getCurrentUserProfileUseCase.invoke(Unit)) {
+        emit(when (val result = getCurrentUserProfileUseCase.invoke(Unit)) {
             is ResultState.Success -> {
                 ProfileViewState.Success(result.data.asUiModel())
             }
@@ -34,7 +34,7 @@ class ProfileViewModel @Inject constructor(
             else -> {
                 ProfileViewState.Loading
             }
-        }
+        })
     }
 
 

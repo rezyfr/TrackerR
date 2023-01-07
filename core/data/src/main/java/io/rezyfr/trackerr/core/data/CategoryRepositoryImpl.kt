@@ -41,8 +41,7 @@ class CategoryRepositoryImpl @Inject constructor(
                             doc.toDomain(
                                 CategoryFirestore::class.java,
                                 CategoryFirestore::asDomainModel
-                            )
-                                .copy(id = doc.id)
+                            ).copy(id = doc.id)
                         }
                         trySend(categories.right())
                     },

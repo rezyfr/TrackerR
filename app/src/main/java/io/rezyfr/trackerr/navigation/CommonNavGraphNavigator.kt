@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.NavGraphSpec
+import com.ramcosta.composedestinations.utils.findDestination
 import io.rezyfr.tracker.feature.profile.ui.ProfileNavigator
 import io.rezyfr.trackerr.feature.auth.AuthNavigator
 import io.rezyfr.trackerr.feature.auth.destinations.AuthScreenDestination
@@ -44,5 +45,9 @@ class CommonNavGraphNavigator(
                 inclusive = true
             }
         }
+    }
+
+    override fun onClickCategory() {
+        navController.navigate("category")
     }
 }
