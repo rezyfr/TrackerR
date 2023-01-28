@@ -48,4 +48,11 @@ class FirestoreModule {
     fun provideCategoryCollection(db: FirebaseFirestore): CollectionReference {
         return db.collection("category")
     }
+
+    @Provides
+    @Singleton
+    @Named("icon")
+    fun provideIconCollection(db: FirebaseFirestore): CollectionReference {
+        return db.collection("icon")
+    }
 }

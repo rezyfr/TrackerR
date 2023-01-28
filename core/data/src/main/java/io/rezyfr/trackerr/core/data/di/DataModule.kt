@@ -14,10 +14,7 @@ import io.rezyfr.trackerr.core.data.*
 import io.rezyfr.trackerr.core.data.session.SessionManagerImpl
 import io.rezyfr.trackerr.core.domain.Dispatcher
 import io.rezyfr.trackerr.core.domain.TrDispatchers
-import io.rezyfr.trackerr.core.domain.repository.CategoryRepository
-import io.rezyfr.trackerr.core.domain.repository.TransactionRepository
-import io.rezyfr.trackerr.core.domain.repository.UserRepository
-import io.rezyfr.trackerr.core.domain.repository.WalletRepository
+import io.rezyfr.trackerr.core.domain.repository.*
 import io.rezyfr.trackerr.core.domain.session.SessionManager
 import io.rezyfr.trackerr.core.persistence.source.DataStoreSource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -75,5 +72,14 @@ class DataModule {
         @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
     ): CategoryRepository {
         return CategoryRepositoryImpl(collectionReference, dispatcher)
+    }
+
+    @Singleton
+    @Provides
+    fun provideIconRepository(
+        @Named("icon") collectionReference: CollectionReference,
+        @Dispatcher(TrDispatchers.IO) dispatcher: CoroutineDispatcher
+    ): IconRepository {
+        return IconRepositoryImpl(collectionReference, dispatcher)
     }
 }

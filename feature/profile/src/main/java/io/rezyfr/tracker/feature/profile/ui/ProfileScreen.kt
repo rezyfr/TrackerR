@@ -48,7 +48,7 @@ fun ProfileScreen(
             viewModel.onEvent(ProfileEvent.DoLogout)
         },
         onCategoryClick = {
-
+            navigator.onClickCategory()
         }
     )
     LogoutEffect(logoutState, onLogoutResult = { navigator.onLogoutSuccess() })

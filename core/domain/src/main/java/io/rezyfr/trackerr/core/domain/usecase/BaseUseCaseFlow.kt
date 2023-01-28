@@ -1,5 +1,6 @@
 package io.rezyfr.trackerr.core.domain.usecase
 
+import android.util.Log
 import io.rezyfr.trackerr.core.domain.session.SessionManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -14,7 +15,7 @@ abstract class BaseUseCaseFlow<in P, out T> constructor(
                 if (sessionManager.isLoggedIn().firstOrNull() != true) {
                     sessionManager.logout()
                 }
-                error(it.message ?: "Unknown error")
+                Log.e("BaseUseCaseFlow", it.message ?: "Unknown error")
             }
     }
 

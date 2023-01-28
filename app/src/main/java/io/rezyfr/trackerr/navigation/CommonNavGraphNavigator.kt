@@ -4,10 +4,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.NavGraphSpec
-import com.ramcosta.composedestinations.utils.findDestination
 import io.rezyfr.tracker.feature.profile.ui.ProfileNavigator
 import io.rezyfr.trackerr.feature.auth.AuthNavigator
 import io.rezyfr.trackerr.feature.auth.destinations.AuthScreenDestination
+import io.rezyfr.trackerr.feature.category.ui.CategoryDialogNavigator
+import io.rezyfr.trackerr.feature.category.ui.destinations.CategoryDialogDestination
 import io.rezyfr.trackerr.feature.dashboard.DashboardNavigator
 import io.rezyfr.trackerr.feature.dashboard.destinations.DashboardScreenDestination
 import io.rezyfr.trackerr.feature.transaction.TransactionDialogNavigator

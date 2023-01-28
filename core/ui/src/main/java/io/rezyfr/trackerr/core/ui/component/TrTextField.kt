@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.feature.transaction.component
+package io.rezyfr.trackerr.core.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +18,7 @@ import io.rezyfr.trackerr.core.ui.icon.Icon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionTextField(
+fun TrTextField(
     value: String? = "",
     placeholder: String = "",
     onValueChange: (String) -> Unit = {},
@@ -74,7 +72,7 @@ fun TransactionTextField(
 fun PreviewTrxTextField() {
     TrTheme {
         Box(Modifier.padding(16.dp)) {
-            TransactionTextField(
+            TrTextField(
                 placeholder = "Category"
             )
         }

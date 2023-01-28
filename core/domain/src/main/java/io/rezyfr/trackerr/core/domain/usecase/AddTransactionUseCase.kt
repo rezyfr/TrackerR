@@ -9,6 +9,7 @@ import io.rezyfr.trackerr.core.domain.repository.CategoryRepository
 import io.rezyfr.trackerr.core.domain.repository.TransactionRepository
 import io.rezyfr.trackerr.core.domain.repository.WalletRepository
 import io.rezyfr.trackerr.core.domain.session.SessionManager
+import io.rezyfr.trackerr.core.domain.usecase.BaseUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 

@@ -23,7 +23,6 @@ import io.rezyfr.trackerr.common.ResultState
 import io.rezyfr.trackerr.core.domain.mapper.fromUiToLocaleDate
 import io.rezyfr.trackerr.core.domain.model.CategoryModel
 import io.rezyfr.trackerr.core.domain.model.WalletModel
-import io.rezyfr.trackerr.core.ui.component.ButtonText
 import io.rezyfr.trackerr.core.ui.component.CircularReveal
 import io.rezyfr.trackerr.core.ui.component.ModalTransitionDialog
 import io.rezyfr.trackerr.core.ui.component.TrAlertDialog
@@ -32,7 +31,7 @@ import io.rezyfr.trackerr.core.ui.component.button.TrPrimaryButton
 import io.rezyfr.trackerr.core.ui.typeIndicatorColor
 import io.rezyfr.trackerr.feature.transaction.component.AmountTextField
 import io.rezyfr.trackerr.feature.transaction.component.TransactionAppBar
-import io.rezyfr.trackerr.feature.transaction.component.TransactionTextField
+import io.rezyfr.trackerr.core.ui.component.TrTextField
 import io.rezyfr.trackerr.feature.transaction.ui.category.CategoryPickerBottomSheet
 import io.rezyfr.trackerr.feature.transaction.ui.datepicker.DatePickerBottomSheet
 import io.rezyfr.trackerr.feature.transaction.ui.wallet.WalletPickerBottomSheet
@@ -175,7 +174,7 @@ fun TransactionForm(
                 .padding(horizontal = 16.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            TransactionTextField(
+            TrTextField(
                 placeholder = "Category",
                 trailingIcon = AppIcon.ImageVectorIcon(Icons.Default.ArrowDropDown),
                 value = state.trx.category.name,
@@ -183,12 +182,12 @@ fun TransactionForm(
                     state.categoryBottomSheet.expand()
                 }
             )
-            TransactionTextField(
+            TrTextField(
                 placeholder = "Description",
                 onValueChange = onDescriptionChange,
                 value = state.trx.description
             )
-            TransactionTextField(
+            TrTextField(
                 placeholder = "Wallet",
                 trailingIcon = AppIcon.ImageVectorIcon(Icons.Default.ArrowDropDown),
                 value = state.trx.wallet.name,
@@ -196,7 +195,7 @@ fun TransactionForm(
                     state.walletBottomSheet.expand()
                 }
             )
-            TransactionTextField(
+            TrTextField(
                 placeholder = "Date",
                 value = state.trx.date,
                 trailingIcon = AppIcon.ImageVectorIcon(Icons.Default.DateRange),

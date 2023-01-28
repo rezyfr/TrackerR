@@ -10,6 +10,7 @@ import com.ramcosta.composedestinations.spec.NavGraphSpec
 import com.ramcosta.composedestinations.spec.Route
 import io.rezyfr.tracker.feature.profile.ui.destinations.ProfileScreenDestination
 import io.rezyfr.trackerr.feature.auth.destinations.AuthScreenDestination
+import io.rezyfr.trackerr.feature.category.ui.destinations.CategoryDialogDestination
 import io.rezyfr.trackerr.feature.dashboard.destinations.DashboardScreenDestination
 import io.rezyfr.trackerr.feature.transaction.destinations.TransactionDialogDestination
 
@@ -55,6 +56,16 @@ object NavGraphs {
 
     }
 
+    val category = object : NavGraphSpec {
+        override val destinationsByRoute: Map<String, DestinationSpec<*>>  = listOf<DestinationSpec<*>>(
+            CategoryDialogDestination
+        ).associateBy { it.route }
+
+        override val route: String = "category"
+        override val startRoute: Route = CategoryDialogDestination
+
+    }
+
     val root = object : NavGraphSpec {
         override val destinationsByRoute: Map<String, DestinationSpec<*>> = emptyMap()
         override val route: String = "root"
@@ -63,7 +74,8 @@ object NavGraphs {
                 auth,
                 dashboard,
                 transaction,
-                profile
+                profile,
+                category
             )
     }
 }
