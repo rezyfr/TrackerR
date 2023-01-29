@@ -8,4 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IconRepository {
     fun getIcons(): Flow<Either<TrackerrError, List<String>>>
+    suspend fun getIconRefByUrl(url: String): Either<TrackerrError, DocumentReference>
+    suspend fun getIconByRef(ref: String): Either<TrackerrError, String>
+
 }

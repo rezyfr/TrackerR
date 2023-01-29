@@ -67,15 +67,15 @@ fun TransactionDialog(
             modifier = modifier,
             state = state,
             onCloseClick = { transitionDialogHelper::triggerAnimatedClose.invoke() },
-            onSelectType = { (viewModel::onEvent)(TransactionEvent.OnSelectType(it)) },
-            onSelectWallet = { (viewModel::onEvent)(TransactionEvent.OnSelectWallet(it)) },
-            onChangeAmount = { (viewModel::onEvent)(TransactionEvent.OnChangeAmount(it)) },
-            onChangeDescription = { (viewModel::onEvent)(TransactionEvent.OnChangeDescription(it)) },
-            onSelectCategory = { (viewModel::onEvent)(TransactionEvent.OnSelectCategory(it)) },
-            onPickDate = { (viewModel::onEvent)(TransactionEvent.OnSelectDate(it)) },
-            onSaveTransaction = { (viewModel::onEvent)(TransactionEvent.OnSaveTransaction) },
-            onDeleteTransaction = { (viewModel::onEvent)(TransactionEvent.OnDeleteTransaction) },
-            onDeleteClick = { (viewModel::onEvent)(TransactionEvent.OnClickDeleteButton) }
+            onSelectType = { viewModel.onEvent(TransactionEvent.OnSelectType(it)) },
+            onSelectWallet = { viewModel.onEvent(TransactionEvent.OnSelectWallet(it)) },
+            onChangeAmount = { viewModel.onEvent(TransactionEvent.OnChangeAmount(it)) },
+            onChangeDescription = { viewModel.onEvent(TransactionEvent.OnChangeDescription(it)) },
+            onSelectCategory = { viewModel.onEvent(TransactionEvent.OnSelectCategory(it)) },
+            onPickDate = { viewModel.onEvent(TransactionEvent.OnSelectDate(it)) },
+            onSaveTransaction = { viewModel.onEvent(TransactionEvent.OnSaveTransaction) },
+            onDeleteTransaction = { viewModel.onEvent(TransactionEvent.OnDeleteTransaction) },
+            onDeleteClick = { viewModel.onEvent(TransactionEvent.OnClickDeleteButton) }
         )
     }
 }

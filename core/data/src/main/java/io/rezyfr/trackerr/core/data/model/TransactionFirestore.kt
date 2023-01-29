@@ -16,6 +16,8 @@ data class TransactionFirestore(
     val amount: Long? = null,
     @get:PropertyName("date")
     val date: Timestamp? = null,
+    @get:PropertyName("lastModifier")
+    val lastModifier: Timestamp? = null,
     @get:PropertyName("description")
     val description: String? = null,
     @get:PropertyName("type")

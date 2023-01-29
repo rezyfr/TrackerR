@@ -1,22 +1,26 @@
 package io.rezyfr.trackerr.feature.transaction.component
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph
+import coil.compose.rememberAsyncImagePainter
 import io.rezyfr.trackerr.core.domain.mapper.NumberUtils
 import io.rezyfr.trackerr.core.domain.model.previewTransactionModel
 import io.rezyfr.trackerr.core.ui.TrTheme
-import io.rezyfr.trackerr.core.ui.transactionIndicatorColor
 import io.rezyfr.trackerr.feature.transaction.model.TransactionUiModel
 import io.rezyfr.trackerr.feature.transaction.model.asUiModel
 
@@ -32,7 +36,7 @@ fun TransactionItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TransactionIcon(
-            color = transaction.amount.transactionIndicatorColor(transaction.isIncome),
+            transaction = transaction,
             Modifier
         )
         Column(
@@ -69,14 +73,25 @@ fun TransactionItem(
 }
 
 @Composable
-fun TransactionIcon(color: Color, modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .size(height = 32.dp, width = 3.dp)
-            .background(color),
-        contentAlignment = Alignment.Center
-    ) {
-    }
+fun TransactionIcon(transaction: TransactionUiModel, modifier: Modifier = Modifier) {
+    Image(
+        painter = rememberAsyncImagePainter(model = transaction.category.icon),
+        contentDescription = null,
+        modifier = Modifier
+            .size(48.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                color = Color(transaction.category.color).copy(alpha = 0.25f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(8.dp),
+        colorFilter = ColorFilter.tint(Color(transaction.category.color))
+    )
 }
 
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)

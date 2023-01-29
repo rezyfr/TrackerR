@@ -13,8 +13,8 @@ import io.rezyfr.trackerr.core.ui.component.BottomSheet
 import io.rezyfr.trackerr.core.ui.component.BottomSheetTitle
 import io.rezyfr.trackerr.core.ui.component.TrxBottomSheet
 import io.rezyfr.trackerr.core.ui.component.button.TrPrimaryButton
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelDatePicker
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelPickerDefaults
+import io.rezyfr.trackerr.core.ui.component.picker.datetime.WheelDatePicker
+import io.rezyfr.trackerr.core.ui.component.picker.datetime.WheelPickerDefaults
 import java.time.LocalDate
 
 @Composable

@@ -1,6 +1,7 @@
 package io.rezyfr.trackerr.core.ui.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ fun ChooseIconButton(
     icons: List<String>,
     onIconChoose: (String) -> Unit,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onBackground,
     onClick: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -37,10 +41,10 @@ fun ChooseIconButton(
         Image(painter = rememberAsyncImagePainter(model = chosenIcon),
             contentDescription = null,
             modifier = Modifier
-                .size(48.dp)
+                .size(64.dp)
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .clip(RoundedCornerShape(12.dp))
@@ -48,8 +52,10 @@ fun ChooseIconButton(
                     expanded = true
                     onClick.invoke()
                 }
+                .background(color = color.copy(alpha = 0.25f), shape = RoundedCornerShape(12.dp))
                 .padding(12.dp)
-                .align(Alignment.Center)
+                .align(Alignment.Center),
+            colorFilter = ColorFilter.tint(color)
         )
         Box {
             CategoryIconDropDown(
@@ -68,7 +74,7 @@ fun ChooseIconButton(
                             .clip(CircleShape)
                             .clickable {
                                 expanded = false
-                                onIconChoose.invoke(iconUrl)
+                                onIconChoose(iconUrl)
                             }
                             .padding(7.5.dp),
                         painter = rememberAsyncImagePainter(iconUrl),

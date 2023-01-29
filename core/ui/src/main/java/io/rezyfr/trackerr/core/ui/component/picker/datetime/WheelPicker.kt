@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSnapperApi::class)
 
-package io.rezyfr.trackerr.core.ui.component.datetimepicker
+package io.rezyfr.trackerr.core.ui.component.picker.datetime
 
 
 import androidx.compose.foundation.BorderStroke

@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.core.ui.component.datetimepicker
+package io.rezyfr.trackerr.core.ui.component.picker.datetime
 
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme

@@ -119,7 +119,7 @@ class TransactionViewModel @Inject constructor(
 
     private fun saveTransaction() {
         viewModelScope.launch {
-            val transaction = trx.value ?: return@launch
+            val transaction = trx.value
 
             val result = addTransactionUseCase(
                 TransactionModel(

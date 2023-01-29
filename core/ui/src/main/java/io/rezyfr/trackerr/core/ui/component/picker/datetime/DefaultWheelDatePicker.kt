@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.core.ui.component.datetimepicker
+package io.rezyfr.trackerr.core.ui.component.picker.datetime
 
 
 import androidx.compose.foundation.layout.Box
@@ -15,6 +15,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import io.rezyfr.trackerr.core.domain.mapper.isDateBefore
+import io.rezyfr.trackerr.core.ui.component.datetimepicker.SnappedDate
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 

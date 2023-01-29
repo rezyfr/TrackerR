@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.core.ui.component
+package io.rezyfr.trackerr.core.ui.component.picker.datetime
 
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -8,8 +8,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.SelectorProperties
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelPickerDefaults
+import io.rezyfr.trackerr.core.ui.component.picker.datetime.DefaultWheelDateTimePicker
+import io.rezyfr.trackerr.core.ui.component.picker.datetime.SelectorProperties
+import io.rezyfr.trackerr.core.ui.component.picker.datetime.TimeFormat
+import io.rezyfr.trackerr.core.ui.component.picker.datetime.WheelPickerDefaults
 import java.time.LocalDateTime
 
 @Composable

@@ -2,23 +2,31 @@ package io.rezyfr.trackerr.feature.category.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
+import io.rezyfr.trackerr.common.ResultState
+import io.rezyfr.trackerr.core.ui.IconColors
 import io.rezyfr.trackerr.core.ui.TrTheme
 import io.rezyfr.trackerr.core.ui.component.ChooseIconButton
 import io.rezyfr.trackerr.core.ui.component.HSpacer
 import io.rezyfr.trackerr.core.ui.component.ModalTransitionDialog
 import io.rezyfr.trackerr.core.ui.component.TrTextField
 import io.rezyfr.trackerr.core.ui.component.button.TrPrimaryButton
+import io.rezyfr.trackerr.core.ui.component.picker.color.ColorPicker
+import io.rezyfr.trackerr.core.ui.component.picker.type.TypeSelector
 import io.rezyfr.trackerr.feature.category.component.CategoryAppBar
 
 
@@ -29,7 +37,7 @@ interface CategoryDialogNavigator {
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
-@Destination()
+@Destination
 fun CategoryDialog(
     modifier: Modifier = Modifier,
     navigator: CategoryDialogNavigator,
@@ -37,28 +45,23 @@ fun CategoryDialog(
     catId: String? = null
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    viewModel.onEvent(CategoryDialogEvent.Initial)
     ModalTransitionDialog(
         onDismissRequest = {
             navigator.navigateUp()
         },
     ) { transitionDialogHelper ->
-//        if (state.saveTransactionResult is ResultState.Success) {
-//            transitionDialogHelper::triggerAnimatedClose.invoke()
-//        }
+        if (state.saveCategoryResult is ResultState.Success) {
+            transitionDialogHelper::triggerAnimatedClose.invoke()
+        }
         CategoryDialog(
             modifier = modifier,
             state = state,
             onCloseClick = { transitionDialogHelper::triggerAnimatedClose.invoke() },
-//            onSelectType = { (viewModel::onEvent)(TransactionEvent.OnSelectType(it)) },
-//            onSelectWallet = { (viewModel::onEvent)(TransactionEvent.OnSelectWallet(it)) },
-//            onChangeAmount = { (viewModel::onEvent)(TransactionEvent.OnChangeAmount(it)) },
-//            onChangeDescription = { (viewModel::onEvent)(TransactionEvent.OnChangeDescription(it)) },
-//            onSelectCategory = { (viewModel::onEvent)(TransactionEvent.OnSelectCategory(it)) },
-//            onPickDate = { (viewModel::onEvent)(TransactionEvent.OnSelectDate(it)) },
-//            onSaveTransaction = { (viewModel::onEvent)(TransactionEvent.OnSaveTransaction) },
-//            onDeleteTransaction = { (viewModel::onEvent)(TransactionEvent.OnDeleteTransaction) },
-//            onDeleteClick = { (viewModel::onEvent)(TransactionEvent.OnClickDeleteButton) }
+            onSelectIcon = { viewModel.onEvent(CategoryDialogEvent.OnChooseIcon(it)) },
+            onSelectColor = { viewModel.onEvent(CategoryDialogEvent.OnChooseColor(it)) },
+            onChangeName = { viewModel.onEvent(CategoryDialogEvent.OnChangeName(it)) },
+            onSelectType = { viewModel.onEvent(CategoryDialogEvent.OnChooseType(it)) },
+            onSaveCategory = { viewModel.onEvent(CategoryDialogEvent.OnSaveCategory) }
         )
     }
 }
@@ -68,6 +71,11 @@ fun CategoryDialog(
     modifier: Modifier = Modifier,
     state: CategoryDialogState,
     onCloseClick: () -> Unit = {},
+    onSelectIcon: (String) -> Unit = {},
+    onSelectColor: (Color) -> Unit = {},
+    onChangeName: (String) -> Unit = {},
+    onSelectType: (String) -> Unit = {},
+    onSaveCategory: () -> Unit = {}
 ) {
     Box(
         modifier
@@ -93,14 +101,73 @@ fun CategoryDialog(
                 .align(Alignment.BottomCenter),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            CategoryTextField(
+            TypeSelector(
+                type = state.cat.type,
+                onSelectType = onSelectType,
+                useDefaultColor = false,
+                backgroundColor = MaterialTheme.colorScheme.background,
+                selectedHighlightColor = MaterialTheme.colorScheme.primary
+            )
+            IconPickerField(
                 modifier = Modifier
                     .wrapContentHeight()
                     .fillMaxWidth(),
-                chosenIcon = state.chosenIcon,
+                chosenIcon = state.cat.url,
+                chosenColor = state.cat.color,
                 icons = state.icons,
+                onChooseIcon = onSelectIcon,
+                onChooseColor = { onSelectColor.invoke(it) }
             )
-            SaveCategoryButton()
+            CategoryTextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onChangeName = onChangeName,
+                name = state.cat.name
+            )
+            SaveCategoryButton(
+                onClick = onSaveCategory,
+                enabledButton = state.enabledButton
+            )
+        }
+    }
+}
+
+@Composable
+fun IconPickerField(
+    modifier: Modifier = Modifier,
+    chosenIcon: String = "",
+    chosenColor: Color = Color(0xFFFFFFFF),
+    icons: List<String> = listOf(),
+    onChooseIcon: (String) -> Unit = {},
+    onChooseColor: (Color) -> Unit = {},
+    onClick: () -> Unit = {},
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+    ) {
+        ChooseIconButton(
+            chosenIcon,
+            icons,
+            color = chosenColor,
+            onIconChoose = onChooseIcon
+        ) {
+            onClick()
+        }
+        HSpacer(16.dp)
+        LazyHorizontalGrid(
+            rows = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+        ) {
+            items(IconColors) {
+                ColorPicker(color = it, selected = chosenColor == it) { color ->
+                    onChooseColor(color)
+                }
+            }
         }
     }
 }
@@ -108,33 +175,14 @@ fun CategoryDialog(
 @Composable
 fun CategoryTextField(
     modifier: Modifier = Modifier,
-    chosenIcon: String = "",
-    icons: List<String> = listOf(),
-    onIconChoose: (String) -> Unit = {},
-    onClick: () -> Unit = {},
+    onChangeName: (String) -> Unit = {},
+    name: String = ""
 ) {
-    var value by remember { mutableStateOf("") }
-    Row(
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        ChooseIconButton (
-            chosenIcon,
-            icons,
-            onIconChoose = onIconChoose
-        ) {
-          onClick()
-        }
-        HSpacer()
-        TrTextField(
-            placeholder = "Write a category...",
-            value = value,
-            onValueChange = {
-                value = it
-            }
-        )
-    }
+    TrTextField(
+        placeholder = "Write a category...",
+        value = name,
+        onValueChange = onChangeName
+    )
 }
 
 @Composable
@@ -155,5 +203,14 @@ fun SaveCategoryButton(
 fun CategoryTextFieldDialogPreview() {
     TrTheme {
         CategoryTextField()
+    }
+}
+
+
+@Preview(showBackground = true, backgroundColor = 0xffFCFCFC)
+@Composable
+fun IconPickerFieldPreview() {
+    TrTheme {
+        IconPickerField()
     }
 }

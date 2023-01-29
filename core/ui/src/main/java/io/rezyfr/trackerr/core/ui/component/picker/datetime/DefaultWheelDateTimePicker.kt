@@ -1,6 +1,5 @@
-package io.rezyfr.trackerr.core.ui.component
+package io.rezyfr.trackerr.core.ui.component.picker.datetime
 
-import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -14,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.*
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.SnappedDate
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.SnappedDateTime
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.SnappedTime
@@ -140,12 +138,22 @@ internal fun DefaultWheelDateTimePicker(
 
                     return@DefaultWheelTimePicker when(snappedTime) {
                         is SnappedTime.Hour -> {
-                            onSnappedDateTime(SnappedDateTime.Hour(snappedDateTime, snappedDateTime.hour))
+                            onSnappedDateTime(
+                                SnappedDateTime.Hour(
+                                    snappedDateTime,
+                                    snappedDateTime.hour
+                                )
+                            )
                             if(timeFormat == TimeFormat.HOUR_24) snappedDateTime.hour else
                             localTimeToAmPmHour(snappedDateTime.toLocalTime()) - 1
                         }
                         is SnappedTime.Minute -> {
-                            onSnappedDateTime(SnappedDateTime.Minute(snappedDateTime, snappedDateTime.minute))
+                            onSnappedDateTime(
+                                SnappedDateTime.Minute(
+                                    snappedDateTime,
+                                    snappedDateTime.minute
+                                )
+                            )
                             snappedDateTime.minute
                         }
                     }

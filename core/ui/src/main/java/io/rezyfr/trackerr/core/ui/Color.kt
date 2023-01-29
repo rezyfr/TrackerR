@@ -81,6 +81,17 @@ val Teal80 = Color(0xFFA2CED9)
 val Teal90 = Color(0xFFBEEAF6)
 val Subdued = PurpleGray50.copy(alpha = 0.75f)
 
+// Icon color
+val BlueIcon = Color(0xff0077FF)
+val RedIcon = Color(0xffFD3C4A)
+val VioletIcon = Color(0xff7F3DFF)
+val YellowIcon = Color(0xffFCAC12)
+val GreenIcon = Color(0xff00A86B)
+val TealIcon = Color(0xff26a69a)
+val OrangeIcon = Color(0xffff5722)
+val CyanIcon = Color(0xff29b6f6)
+
+val IconColors = listOf(BlueIcon, RedIcon, VioletIcon, YellowIcon, GreenIcon, TealIcon, OrangeIcon, CyanIcon)
 fun Long.transactionIndicatorColor(isIncome: Boolean) = when {
     isIncome -> {
         when {

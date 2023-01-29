@@ -89,7 +89,7 @@ fun Preview() {
                     id = "1",
                     name = "Category 1",
                     userId = "1",
-                    type = "expense"
+                    type = "expense", color = 0, icon = ""
                 ),
                 type =  TransactionType.EXPENSE
             ) {}
@@ -101,30 +101,30 @@ private fun previewState() = CategoryPickerState.Success(
     categories = listOf(
         CategoryModel(
             id = "1", userId = "0",
-            name = "Category 1", type = "expense"
+            name = "Category 1", type = "expense", color = 0, icon = ""
         ),
         CategoryModel(
             id = "2", userId = "0",
-            name = "Category 2", type = "expense"
+            name = "Category 2", type = "expense", color = 0, icon = ""
         ),
         CategoryModel(
             id = "3", userId = "0",
-            name = "Category 3", type = "expense"
+            name = "Category 3", type = "expense", color = 0, icon = ""
         ),
         CategoryModel(
             type = "expense",
             id = "4", userId = "0",
-            name = "Category 4"
+            name = "Category 4", color = 0, icon = ""
         ),
         CategoryModel(
             id = "5", userId = "0",
             name = "Category 1",
-            type = "income",
+            type = "income", color = 0, icon = "",
         )
     ),
     selectedCategory = CategoryModel(
         id = "1", userId = "0",
         name = "Category 1",
-        type = "income",
+        type = "income", color = 0, icon = ""
     )
 )

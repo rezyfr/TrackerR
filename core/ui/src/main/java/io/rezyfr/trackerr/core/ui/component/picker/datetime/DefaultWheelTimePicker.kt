@@ -1,4 +1,4 @@
-package io.rezyfr.trackerr.core.ui.component
+package io.rezyfr.trackerr.core.ui.component.picker.datetime
 
 
 import androidx.compose.foundation.layout.Box
@@ -15,10 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.SelectorProperties
 import io.rezyfr.trackerr.core.ui.component.datetimepicker.SnappedTime
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelPickerDefaults
-import io.rezyfr.trackerr.core.ui.component.datetimepicker.WheelTextPicker
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
@@ -133,7 +130,7 @@ internal fun DefaultWheelTimePicker(
                         val newIndex = if(timeFormat == TimeFormat.HOUR_24) {
                             hours.find { it.value == snappedTime.hour }?.index
                         } else {
-                            amPmHours.find { it.value ==  localTimeToAmPmHour(snappedTime)}?.index
+                            amPmHours.find { it.value ==  localTimeToAmPmHour(snappedTime) }?.index
                         }
 
                         newIndex?.let {
@@ -150,7 +147,7 @@ internal fun DefaultWheelTimePicker(
                     return@WheelTextPicker if(timeFormat == TimeFormat.HOUR_24) {
                         hours.find { it.value == snappedTime.hour }?.index
                     } else {
-                        amPmHours.find { it.value ==  localTimeToAmPmHour(snappedTime)}?.index
+                        amPmHours.find { it.value ==  localTimeToAmPmHour(snappedTime) }?.index
                     }
                 }
             )

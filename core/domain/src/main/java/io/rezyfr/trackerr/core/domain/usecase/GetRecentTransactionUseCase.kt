@@ -5,6 +5,7 @@ import io.rezyfr.trackerr.common.ResultState
 import io.rezyfr.trackerr.core.domain.mapper.getLeft
 import io.rezyfr.trackerr.core.domain.model.TransactionModel
 import io.rezyfr.trackerr.core.domain.repository.CategoryRepository
+import io.rezyfr.trackerr.core.domain.repository.IconRepository
 import io.rezyfr.trackerr.core.domain.repository.TransactionRepository
 import io.rezyfr.trackerr.core.domain.repository.WalletRepository
 import io.rezyfr.trackerr.core.domain.session.SessionManager
@@ -17,6 +18,7 @@ class GetRecentTransactionUseCase @Inject constructor(
     private val repository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
     private val walletRepository: WalletRepository,
+    private val iconRepository: IconRepository,
     private val sessionManager: SessionManager
 ) : BaseUseCaseFlow<Unit, ResultState<List<TransactionModel>>>(sessionManager) {
     override fun execute(param: Unit): Flow<ResultState<List<TransactionModel>>> {
@@ -26,9 +28,14 @@ class GetRecentTransactionUseCase @Inject constructor(
                     val category = categoryRepository.getCategoryByRef(tf.categoryRef!!.id)
                     val wallet = walletRepository.getWalletByRef(tf.walletRef!!.id)
                     if (category.isRight() && wallet.isRight()) {
+                        val categoryResult = category.orNull()!!
+                        val walletResult = wallet.orNull()!!
+                        val icon = iconRepository.getIconByRef(categoryResult.iconRef?.id.orEmpty())
                         tf.copy(
-                            category = category.orNull()!!,
-                            wallet = wallet.orNull()!!
+                            category = categoryResult.copy(
+                                icon = if (icon.isRight()) icon.orNull()!! else ""
+                            ),
+                            wallet = walletResult,
                         )
                     } else {
                         throw Throwable(category.getLeft() ?: wallet.getLeft())

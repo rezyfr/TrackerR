@@ -39,7 +39,7 @@ fun TransactionModel.asUiModel(withWeekDay: Boolean = false) =
         id = id,
         amount = amount,
         amountLabel = TextFieldValue(amount.toString()),
-        date = date.formatToUi(includeWeekDay = withWeekDay),
+        date = date.formatToUi(includeWeekDay = withWeekDay, format = "dd MMM yyyy"),
         description = description,
         type = type,
         wallet = wallet,

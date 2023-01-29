@@ -11,4 +11,6 @@ interface CategoryRepository {
     fun getCategories(uid: String?): Flow<Either<TrackerrError, List<CategoryModel>>>
     suspend fun getCategoryRefById(id: String): DomainResult<DocumentReference>
     suspend fun getCategoryByRef(ref: String): DomainResult<CategoryModel>
+    suspend fun saveCategory(category: HashMap<String, Any>): Either<TrackerrError, Nothing?>
+
 }

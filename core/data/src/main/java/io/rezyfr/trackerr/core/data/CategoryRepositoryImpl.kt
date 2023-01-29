@@ -9,8 +9,8 @@ import com.google.firebase.firestore.DocumentReference
 import io.rezyfr.trackerr.core.data.model.CategoryFirestore
 import io.rezyfr.trackerr.core.data.model.asDomainModel
 import io.rezyfr.trackerr.core.data.util.cacheFirstSnapshot
-import io.rezyfr.trackerr.core.data.util.handleAwait
 import io.rezyfr.trackerr.core.data.util.handleDocumentSnapshot
+import io.rezyfr.trackerr.core.data.util.handleNullAwait
 import io.rezyfr.trackerr.core.data.util.withUserId
 import io.rezyfr.trackerr.core.domain.Dispatcher
 import io.rezyfr.trackerr.core.domain.DomainResult
@@ -67,5 +67,20 @@ class CategoryRepositoryImpl @Inject constructor(
             firestoreClass = CategoryFirestore::class.java,
             snapshotMapper = CategoryFirestore::asDomainModel
         )
+    }
+
+    override suspend fun saveCategory(category: HashMap<String, Any>): Either<TrackerrError, Nothing?> = try {
+        val task = if (category["id"] == null) {
+            val doc = db.document()
+            category["id"] = doc.id
+            doc.set(category)
+            db.add(doc)
+        } else {
+            db.document(category["id"] as String).set(category)
+        }
+        task.handleNullAwait()
+    } catch (e: Exception) {
+        if (e.message?.contains("DocumentReference") == true) Either.Right(null)
+        else e.toError().left()
     }
 }
