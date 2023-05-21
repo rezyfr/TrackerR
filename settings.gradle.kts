@@ -1,7 +1,21 @@
 
 
 pluginManagement {
-    includeBuild("build-logic")
+    listOf(repositories, dependencyResolutionManagement.repositories).forEach {
+        it.apply {
+            mavenCentral()
+            google()
+            maven(url = "https://androidx.dev/storage/compose-compiler/repository")
+            maven(url = "https://maven.pkg.jetbrains.space/public/p/compose/dev")
+            gradlePluginPortal {
+                content {
+                }
+            }
+            maven {
+                url = uri("https://jitpack.io")
+            }
+        }
+    }
     repositories {
         gradlePluginPortal()
         google()
